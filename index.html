@@ -1,0 +1,4710 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta name="cache-buster" content="1786640269">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0a0a14" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>大模型学习打卡助手 · 新版</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<style>
+:root{
+  --bg:#0a0a14; --panel:rgba(255,255,255,.04); --panel2:rgba(255,255,255,.07);
+  --line:rgba(255,255,255,.10); --txt:#e8ecf5; --mut:#8a92ad;
+  --cyan:#22d3ee; --mag:#d946ef; --vio:#8b5cf6; --grn:#34d399; --red:#fb7185; --amb:#fbbf24;
+  --sb:130px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit}
+a{color:var(--cyan)}
+/* animated bg */
+.bg-anim{position:fixed;inset:0;z-index:-2;background:
+  radial-gradient(60% 50% at 15% 10%, rgba(34,211,238,.16), transparent 60%),
+  radial-gradient(55% 45% at 85% 15%, rgba(217,70,239,.16), transparent 60%),
+  radial-gradient(60% 55% at 50% 100%, rgba(139,92,246,.18), transparent 60%),
+  #07070f;}
+.bg-anim::after{content:"";position:absolute;inset:0;opacity:.5;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:44px 44px;mask-image:radial-gradient(circle at 50% 40%,#000,transparent 80%)}
+.app{display:flex;min-height:100vh}
+/* sidebar */
+.sidebar{width:var(--sb);flex:0 0 var(--sb);position:sticky;top:0;height:100vh;
+  display:flex;flex-direction:column;gap:6px;padding:18px 10px;
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+  border-right:1px solid var(--line);backdrop-filter:blur(14px);z-index:40}
+.logo{font-weight:800;font-size:13px;line-height:1.3;text-align:center;margin:4px 0 14px;
+  background:linear-gradient(90deg,var(--cyan),var(--mag));-webkit-background-clip:text;background-clip:text;color:transparent}
+.nav{display:flex;flex-direction:column;gap:8px}
+.nav button{display:flex;flex-direction:column;align-items:center;gap:5px;padding:11px 4px;border-radius:14px;
+  color:var(--mut);font-size:11px;transition:.2s;border:1px solid transparent}
+.nav button svg{width:24px;height:24px}
+.nav button:hover{color:var(--txt);background:var(--panel)}
+.nav button.on{color:#fff;background:linear-gradient(135deg,rgba(34,211,238,.22),rgba(217,70,239,.22));
+  border-color:rgba(34,211,238,.4);box-shadow:0 0 18px rgba(34,211,238,.25)}
+.sb-foot{margin-top:auto;font-size:9px;color:var(--mut);text-align:center;line-height:1.5}
+/* main */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{display:none;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);
+  background:var(--panel);backdrop-filter:blur(12px);position:sticky;top:0;z-index:30}
+.ham{width:42px;height:42px;border-radius:12px;background:var(--panel2);display:grid;place-items:center}
+.ham svg{width:22px;height:22px}
+.topbar h1{font-size:16px;margin:0;font-weight:700}
+#view{padding:28px 20px;max-width:1080px;width:100%;margin:0 auto}
+/* cards */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;
+  backdrop-filter:blur(10px);box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.card+h1,.block{margin-top:18px}
+.h2{font-size:15px;font-weight:700;margin:0 0 14px;display:flex;align-items:center;gap:8px}
+.h2 .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--mag));box-shadow:0 0 10px var(--cyan)}
+.row{display:flex;gap:14px;flex-wrap:wrap}
+/* today panel */
+.today{border:1px solid rgba(34,211,238,.3);background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(217,70,239,.06))}
+.today ul{margin:6px 0 0;padding:0;list-style:none}
+.today li{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.today li:last-child{border-bottom:none}
+/* motivation */
+.moti{position:relative;overflow:hidden;border:1px solid rgba(217,70,239,.3);
+  background:linear-gradient(135deg,rgba(217,70,239,.10),rgba(139,92,246,.08))}
+.moti .big{font-size:clamp(20px,3.4vw,30px);font-weight:800;line-height:1.4;margin:6px 0 14px;
+  background:linear-gradient(90deg,#fff,#cbe8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.motibtn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:12px;font-size:13px;font-weight:600;
+  background:linear-gradient(135deg,var(--cyan),var(--vio));color:#06121a;box-shadow:0 4px 18px rgba(34,211,238,.3)}
+.motibtn:active{transform:scale(.97)}
+/* stat cards */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat{padding:16px;border-radius:16px;background:var(--panel);border:1px solid var(--line);position:relative;overflow:hidden}
+.stat .v{font-size:26px;font-weight:800;line-height:1}
+.stat .l{font-size:12px;color:var(--mut);margin-top:8px}
+.stat .ic{position:absolute;right:10px;top:10px;width:30px;height:30px;opacity:.35}
+.stat.c1 .v{color:var(--cyan)}.stat.c2 .v{color:var(--mag)}.stat.c3 .v{color:var(--grn)}.stat.c4 .v{color:var(--amb)}
+/* module progress */
+.mods{display:flex;flex-direction:column;gap:10px}
+.mod{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;background:var(--panel);
+  border:1px solid var(--line);cursor:pointer;transition:.18s}
+.mod:hover{background:var(--panel2);transform:translateX(2px)}
+.mod .nm{width:150px;flex:0 0 150px;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mod .track{flex:1;height:9px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden}
+.mod .fill{height:100%;border-radius:6px;transition:width .6s}
+.mod .pc{width:96px;flex:0 0 96px;text-align:right;font-size:12px;color:var(--mut)}
+/* plan */
+.plan-head{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.inp{flex:1;min-width:180px;padding:11px 14px;border-radius:12px;background:rgba(0,0,0,.3);
+  border:1px solid var(--line);color:var(--txt);font-size:15px}
+.inp:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(34,211,238,.15)}
+.btn{padding:11px 18px;border-radius:12px;font-size:14px;font-weight:600;background:var(--panel2);border:1px solid var(--line)}
+.btn.primary{background:linear-gradient(135deg,var(--cyan),var(--vio));color:#06121a;border:none}
+.btn:active{transform:scale(.97)}
+.btn.sm{padding:7px 12px;font-size:12px;border-radius:10px}
+.btn.danger{color:var(--red);border-color:rgba(251,113,133,.4)}
+/* calendar */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
+.cal .wd{text-align:center;font-size:11px;color:var(--mut);padding:4px 0}
+.cal .day{aspect-ratio:1/1;display:grid;place-items:center;font-size:13px;border-radius:11px;
+  background:rgba(255,255,255,.03);border:1px solid var(--line);position:relative;cursor:pointer}
+.cal .day.sel{background:linear-gradient(135deg,var(--cyan),var(--vio));color:#06121a;font-weight:800;border:none}
+.cal .day.hit::after{content:"";position:absolute;bottom:6px;width:6px;height:6px;border-radius:50%;background:var(--grn);box-shadow:0 0 6px var(--grn)}
+.cal .day.dim{color:var(--mut);opacity:.4;cursor:default}
+.cal .day.today{outline:2px solid var(--cyan)}
+/* achievements */
+.ach{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.ach .a{padding:14px;border-radius:14px;background:var(--panel);border:1px solid var(--line);text-align:center;opacity:.45;filter:grayscale(.6)}
+.ach .a.un{opacity:1;filter:none;border-color:rgba(251,191,36,.4);box-shadow:0 0 16px rgba(251,191,36,.15)}
+.ach .a .em{font-size:24px}
+.ach .a .an{font-size:13px;font-weight:700;margin:6px 0 3px}
+.ach .a .ad{font-size:11px;color:var(--mut);line-height:1.4}
+/* learn */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px}
+.tabs button{flex:0 0 auto;padding:8px 14px;border-radius:11px;font-size:12.5px;font-weight:600;
+  background:var(--panel);border:1px solid var(--line);color:var(--mut);white-space:nowrap}
+.tabs button.on{color:#fff;background:var(--panel2);border-color:var(--cyan);box-shadow:0 0 12px rgba(34,211,238,.2)}
+.tabs .mod-rename{flex:0 0 auto;padding:6px 10px;border-radius:9px;font-size:11px;
+  background:rgba(255,255,255,.04);border:1px dashed var(--line);color:var(--mut);cursor:pointer}
+.tabs .mod-rename:hover{color:var(--txt);border-color:var(--cyan)}
+.grp{margin-bottom:20px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel)}
+.grp.hidden-grp{opacity:.5}
+.grp .gh{display:flex;align-items:center;gap:10px;padding:14px 18px;
+  background:linear-gradient(90deg,var(--gc,var(--cyan))22,transparent)}
+.grp .gh .gn{font-size:14px;font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grp .gh .meta{font-size:11px;color:var(--mut);flex:0 0 auto}
+.grp .gh .hug{font-size:18px;flex:0 0 auto;filter:grayscale(.2)}
+.grp .gb{padding:4px 14px 14px}
+.course{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;margin-top:7px;
+  background:rgba(255,255,255,.03);border:1px solid transparent;transition:.15s}
+.course:hover{border-color:var(--line)}
+.course .cb{width:22px;height:22px;flex:0 0 22px;border-radius:7px;border:2px solid var(--mut);
+  display:grid;place-items:center;transition:.15s}
+.course.done .cb{background:linear-gradient(135deg,var(--grn),var(--cyan));border-color:transparent}
+.course .cb svg{width:14px;height:14px;opacity:0;color:#06121a}
+.course.done .cb svg{opacity:1}
+.course .cn{flex:1;font-size:14px;min-width:0}
+.course.done .cn{color:var(--mut);text-decoration:line-through}
+.course .cm{font-size:12px;color:var(--mut);flex:0 0 auto}
+.course .ced{display:none;gap:6px;flex:0 0 auto}
+.edit .course .ced{display:flex}
+.addcustom{display:none;gap:8px;padding:10px 12px;margin-top:6px;background:rgba(0,0,0,.25);border-radius:11px}
+.edit .addcustom{display:flex;flex-wrap:wrap}
+.addcustom input{flex:1;min-width:120px;padding:8px 10px;border-radius:9px;background:rgba(0,0,0,.35);border:1px solid var(--line);color:var(--txt);font-size:13px}
+.create-bar{display:none;gap:8px;align-items:center;padding:12px 16px;margin-bottom:14px;
+  background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(217,70,239,.06));
+  border:1px solid rgba(34,211,238,.25);border-radius:14px;flex-wrap:wrap}
+.edit .create-bar{display:flex}
+.create-bar .btn-sm{padding:7px 14px;border-radius:10px;font-size:12.5px;font-weight:600;
+  background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--txt);cursor:pointer;transition:.15s}
+.create-bar .btn-sm:hover{border-color:var(--cyan);background:rgba(34,211,238,.12)}
+.create-bar .btn-sm.primary{border-color:var(--cyan);background:rgba(34,211,238,.15);color:var(--cyan)}
+/* settings */
+.set-sec{margin-bottom:18px}
+.set-sec .h2{margin-bottom:10px}
+.kv{display:flex;flex-direction:column;gap:10px}
+.kv label{font-size:12px;color:var(--mut)}
+.setrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.danger-zone{border:1px solid rgba(251,113,133,.3);background:rgba(251,113,133,.05)}
+/* drawer */
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:35;opacity:0;pointer-events:none;transition:.25s}
+.mask.show{opacity:1;pointer-events:auto}
+/* toast */
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);
+  background:rgba(20,20,35,.95);border:1px solid var(--line);padding:12px 20px;border-radius:12px;
+  font-size:13px;opacity:0;pointer-events:none;transition:.3s;z-index:99;backdrop-filter:blur(8px)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* pwa banner */
+.pwabtn{display:none}
+@media (max-width:768px){
+  :root{--sb:0px}
+  .sidebar{position:fixed;left:0;top:0;width:230px;flex-basis:230px;transform:translateX(-100%);transition:.28s;z-index:45}
+  .sidebar.open{transform:translateX(0)}
+  .topbar{display:flex}
+  #view{padding:16px 14px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .mod .nm{width:110px;flex-basis:110px}
+  .nav{flex-direction:row;flex-wrap:wrap;justify-content:center}
+  .nav button{flex:1;min-width:64px}
+}
+/* ---------- 行内编辑 / 弹窗 ---------- */
+.inline-edit{width:100%;padding:6px 8px;border-radius:8px;background:rgba(0,0,0,.45);border:1px solid var(--cyan);color:var(--txt);font-size:14px;outline:none;font-family:inherit}
+.modal-root{display:none;position:fixed;inset:0;z-index:120}
+.modal-mask{position:absolute;inset:0;background:rgba(3,5,12,.72);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{width:min(420px,92vw);background:linear-gradient(160deg,#12162a,#0b0e1c);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal-h{font-size:16px;font-weight:700;color:var(--txt);margin-bottom:16px}
+.modal-msg{font-size:14px;color:var(--mut);margin-bottom:18px;line-height:1.6}
+.modal-row{margin-bottom:13px}
+.modal-row label{display:block;font-size:12px;color:var(--mut);margin-bottom:5px}
+.modal-inp,.modal .inp{width:100%}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="bg-anim"></div>
+<div id="storeWarn" style="display:none;padding:9px 16px;background:rgba(251,113,133,.16);border-bottom:1px solid rgba(251,113,133,.4);color:#fecdd3;font-size:13px;text-align:center;z-index:60;position:relative">⚠️ 当前打开方式无法保存学习进度（多为双击本地文件 / 隐私模式所致）。请用「本地服务器」或「部署到网页」后访问，本次数据仅临时有效。</div>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">大模型<br>学习打卡助手</div>
+    <nav class="nav" id="nav"></nav>
+    <div class="sb-foot">v5.1 · 数据存于本机<br>纯离线可用</div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <button class="ham" id="ham" aria-label="菜单"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <h1 id="ptitle">首页</h1>
+    </header>
+    <section id="view"></section>
+  </div>
+</div>
+<div class="mask" id="mask"></div>
+<div class="toast" id="toast"></div>
+<div class="modal-root" id="modalRoot"></div>
+
+<script>
+/* ============ 课程数据（由构建脚本注入） ============ */
+const COURSES = [
+{
+"name": "安康智慧健康管理平台",
+"color": "#7B9E87",
+"bg": "#7B9E871a",
+"groups": [
+{
+"name": "项目基础",
+"courses": [
+{
+"id": 1,
+"name": "项目介绍",
+"m": 8
+},
+{
+"id": 2,
+"name": "核心功能",
+"m": 6
+},
+{
+"id": 3,
+"name": "技术选型与亮点",
+"m": 5
+},
+{
+"id": 4,
+"name": "项目架构图",
+"m": 6
+},
+{
+"id": 5,
+"name": "Agent工作流程图与时序图",
+"m": 9
+},
+{
+"id": 6,
+"name": "数据库ER图",
+"m": 4
+}
+]
+},
+{
+"name": "项目搭建",
+"courses": [
+{
+"id": 7,
+"name": "创建数据库",
+"m": 11
+},
+{
+"id": 8,
+"name": "项目搭建(1)",
+"m": 11
+},
+{
+"id": 9,
+"name": "项目搭建(2)",
+"m": 9
+},
+{
+"id": 10,
+"name": "编写测试API(1)",
+"m": 10
+},
+{
+"id": 11,
+"name": "编写测试API(2)",
+"m": 13
+},
+{
+"id": 12,
+"name": "连接前端工程",
+"m": 4
+},
+{
+"id": 13,
+"name": "患者管理",
+"m": 12
+}
+]
+},
+{
+"name": "核心业务",
+"courses": [
+{
+"id": 14,
+"name": "血糖管理(1)",
+"m": 11
+},
+{
+"id": 15,
+"name": "血糖管理(2)",
+"m": 9
+},
+{
+"id": 16,
+"name": "血糖管理(3)",
+"m": 6
+},
+{
+"id": 17,
+"name": "饮食管理(1)",
+"m": 3
+},
+{
+"id": 18,
+"name": "饮食管理(2)",
+"m": 13
+},
+{
+"id": 19,
+"name": "用药管理",
+"m": 12
+},
+{
+"id": 20,
+"name": "运动管理",
+"m": 11
+},
+{
+"id": 21,
+"name": "每日营养统计(1)",
+"m": 11
+},
+{
+"id": 22,
+"name": "每日营养统计(2)",
+"m": 11
+},
+{
+"id": 23,
+"name": "饮食推荐(1)",
+"m": 8
+},
+{
+"id": 24,
+"name": "饮食推荐(2)",
+"m": 3
+}
+]
+},
+{
+"name": "健康报告",
+"courses": [
+{
+"id": 25,
+"name": "健康报告_编写模型",
+"m": 6
+},
+{
+"id": 26,
+"name": "健康报告_LLM客户端(1)",
+"m": 8
+},
+{
+"id": 27,
+"name": "健康报告_LLM客户端(2)",
+"m": 7
+},
+{
+"id": 28,
+"name": "健康报告_健康分析引擎(1)",
+"m": 16
+},
+{
+"id": 29,
+"name": "健康报告_健康分析引擎(2)",
+"m": 9
+},
+{
+"id": 30,
+"name": "健康报告_健康分析引擎(3)",
+"m": 5
+},
+{
+"id": 31,
+"name": "健康报告_路由(1)",
+"m": 13
+},
+{
+"id": 32,
+"name": "健康报告_路由(2)",
+"m": 5
+},
+{
+"id": 33,
+"name": "仪表盘",
+"m": 8
+}
+]
+},
+{
+"name": "AI对话",
+"courses": [
+{
+"id": 34,
+"name": "AI对话_模型",
+"m": 9
+},
+{
+"id": 35,
+"name": "AI对话_配置",
+"m": 5
+},
+{
+"id": 36,
+"name": "AI对话_向量数据库(1)",
+"m": 10
+},
+{
+"id": 37,
+"name": "AI对话_向量数据库(2)",
+"m": 10
+},
+{
+"id": 38,
+"name": "AI对话_向量数据库(3)",
+"m": 7
+},
+{
+"id": 39,
+"name": "AI对话_医学知识库(1)",
+"m": 7
+},
+{
+"id": 40,
+"name": "AI对话_医学知识库(2)",
+"m": 9
+},
+{
+"id": 41,
+"name": "AI对话_RAG引擎",
+"m": 9
+},
+{
+"id": 42,
+"name": "AI对话_工作流(1)",
+"m": 10
+},
+{
+"id": 43,
+"name": "AI对话_工作流(2)",
+"m": 4
+},
+{
+"id": 44,
+"name": "AI对话_工作流(3)",
+"m": 6
+},
+{
+"id": 45,
+"name": "AI对话_工作流(4)",
+"m": 5
+},
+{
+"id": 46,
+"name": "AI对话_工作流(5)",
+"m": 7
+},
+{
+"id": 47,
+"name": "AI对话_工作流(6)",
+"m": 8
+},
+{
+"id": 48,
+"name": "AI对话_路由(1)",
+"m": 7
+},
+{
+"id": 49,
+"name": "AI对话_路由(2)",
+"m": 5
+},
+{
+"id": 50,
+"name": "AI对话_测试",
+"m": 4
+}
+]
+}
+]
+},
+{
+"name": "百战智能运营平台",
+"color": "#D4A88E",
+"bg": "#D4A88E1a",
+"groups": [
+{
+"name": "项目搭建与认证",
+"courses": [
+{
+"id": 51,
+"name": "项目介绍",
+"m": 8
+},
+{
+"id": 52,
+"name": "核心功能与技术选型",
+"m": 6
+},
+{
+"id": 53,
+"name": "创建数据库",
+"m": 9
+},
+{
+"id": 54,
+"name": "项目搭建_初始化",
+"m": 8
+},
+{
+"id": 55,
+"name": "项目搭建_配置文件",
+"m": 9
+},
+{
+"id": 56,
+"name": "项目搭建_模型文件",
+"m": 7
+},
+{
+"id": 57,
+"name": "初始化Aerich",
+"m": 3
+},
+{
+"id": 58,
+"name": "测试API_管理ORM生命周期",
+"m": 9
+},
+{
+"id": 59,
+"name": "测试API_编写主路由",
+"m": 10
+},
+{
+"id": 60,
+"name": "测试API_测试接口",
+"m": 10
+},
+{
+"id": 61,
+"name": "登录功能_修改配置文件",
+"m": 7
+},
+{
+"id": 62,
+"name": "登录功能_生成令牌方法",
+"m": 6
+},
+{
+"id": 63,
+"name": "登录功能_登录接口",
+"m": 11
+},
+{
+"id": 64,
+"name": "认证功能",
+"m": 10
+},
+{
+"id": 65,
+"name": "连接前端进行测试",
+"m": 8
+}
+]
+},
+{
+"name": "AI生成题目",
+"courses": [
+{
+"id": 66,
+"name": "根据主题生成题目_创建Bot",
+"m": 13
+},
+{
+"id": 67,
+"name": "生成API令牌",
+"m": 6
+},
+{
+"id": 68,
+"name": "通过API调用Bot",
+"m": 11
+},
+{
+"id": 69,
+"name": "工作流定义(1)",
+"m": 14
+},
+{
+"id": 70,
+"name": "工作流定义(2)",
+"m": 15
+},
+{
+"id": 71,
+"name": "编写API(1)",
+"m": 9
+},
+{
+"id": 72,
+"name": "编写API(2)",
+"m": 6
+},
+{
+"id": 73,
+"name": "编写API(3)",
+"m": 15
+},
+{
+"id": 74,
+"name": "查询当前用户已生成的主题",
+"m": 10
+},
+{
+"id": 75,
+"name": "根据主题查询标题(1)",
+"m": 6
+},
+{
+"id": 76,
+"name": "根据主题查询标题(2)",
+"m": 7
+}
+]
+},
+{
+"name": "AI生成文章与文案",
+"courses": [
+{
+"id": 77,
+"name": "根据题目生成文章_创建Coze智能体",
+"m": 6
+},
+{
+"id": 78,
+"name": "调用智能体",
+"m": 5
+},
+{
+"id": 79,
+"name": "编写API(1)",
+"m": 5
+},
+{
+"id": 80,
+"name": "编写API(2)",
+"m": 9
+},
+{
+"id": 81,
+"name": "重置文案",
+"m": 8
+},
+{
+"id": 82,
+"name": "保存文案",
+"m": 6
+},
+{
+"id": 83,
+"name": "查找风格列表",
+"m": 5
+}
+]
+},
+{
+"name": "图片生成与上传",
+"courses": [
+{
+"id": 84,
+"name": "生成图片_组装提示词",
+"m": 9
+},
+{
+"id": 85,
+"name": "调用模型生成(1)",
+"m": 8
+},
+{
+"id": 86,
+"name": "调用模型生成(2)",
+"m": 13
+},
+{
+"id": 87,
+"name": "上传图片_配置阿里云OSS",
+"m": 7
+},
+{
+"id": 88,
+"name": "上传图片_创建上传工具类",
+"m": 8
+},
+{
+"id": 89,
+"name": "上传图片_上传本地图片",
+"m": 13
+},
+{
+"id": 90,
+"name": "上传图片_上传网络图片",
+"m": 9
+},
+{
+"id": 91,
+"name": "上传图片_测试",
+"m": 5
+},
+{
+"id": 92,
+"name": "生成封面图(1)",
+"m": 13
+},
+{
+"id": 93,
+"name": "生成封面图(2)",
+"m": 6
+},
+{
+"id": 94,
+"name": "获取封面图",
+"m": 7
+},
+{
+"id": 95,
+"name": "上传封面图",
+"m": 10
+},
+{
+"id": 96,
+"name": "上传封面图_测试",
+"m": 3
+}
+]
+},
+{
+"name": "图文管理与素材库",
+"courses": [
+{
+"id": 97,
+"name": "上传正文图",
+"m": 9
+},
+{
+"id": 98,
+"name": "获取标题的正文图列表",
+"m": 5
+},
+{
+"id": 99,
+"name": "删除正文图",
+"m": 5
+},
+{
+"id": 100,
+"name": "图文排版测试",
+"m": 3
+},
+{
+"id": 101,
+"name": "修改题目和文案",
+"m": 7
+},
+{
+"id": 102,
+"name": "管理小红书账号",
+"m": 8
+},
+{
+"id": 103,
+"name": "管理小红书账号_新增",
+"m": 9
+},
+{
+"id": 104,
+"name": "管理小红书账号_修改删除查询",
+"m": 8
+},
+{
+"id": 105,
+"name": "管理小红书账号_测试",
+"m": 2
+},
+{
+"id": 106,
+"name": "发布笔记工具类(1)",
+"m": 8
+},
+{
+"id": 107,
+"name": "发布笔记工具类(2)",
+"m": 9
+},
+{
+"id": 108,
+"name": "发布笔记(1)",
+"m": 6
+},
+{
+"id": 109,
+"name": "发布笔记(2)",
+"m": 13
+},
+{
+"id": 110,
+"name": "发布笔记_测试",
+"m": 10
+},
+{
+"id": 111,
+"name": "查询发布历史(1)",
+"m": 6
+},
+{
+"id": 112,
+"name": "查询发布历史(2)",
+"m": 6
+},
+{
+"id": 113,
+"name": "查询发布历史详情",
+"m": 5
+},
+{
+"id": 114,
+"name": "文案素材库_查询",
+"m": 8
+},
+{
+"id": 115,
+"name": "文案素材库_新增修改",
+"m": 5
+},
+{
+"id": 116,
+"name": "文案素材库_删除",
+"m": 2
+},
+{
+"id": 117,
+"name": "图片素材库(1)",
+"m": 7
+},
+{
+"id": 118,
+"name": "图片素材库(2)",
+"m": 3
+},
+{
+"id": 119,
+"name": "发布时保存到素材库",
+"m": 7
+},
+{
+"id": 120,
+"name": "创作时使用素材库(1)",
+"m": 9
+},
+{
+"id": 121,
+"name": "创作时使用素材库(2)",
+"m": 6
+}
+]
+},
+{
+"name": "笔记数据获取",
+"courses": [
+{
+"id": 122,
+"name": "获取笔记数据_创建Coze智能体(1)",
+"m": 9
+},
+{
+"id": 123,
+"name": "获取笔记数据_创建Coze智能体(2)",
+"m": 3
+},
+{
+"id": 124,
+"name": "获取笔记数据_编写工具函数",
+"m": 5
+},
+{
+"id": 125,
+"name": "获取笔记数据_维护完整路径",
+"m": 10
+},
+{
+"id": 126,
+"name": "获取笔记数据_路由",
+"m": 10
+}
+]
+}
+]
+},
+{
+"name": "后端服务开发 FastAPI",
+"color": "#6B8294",
+"bg": "#6B82941a",
+"groups": [
+{
+"name": "FastAPI 核心基础",
+"courses": [
+{
+"id": 127,
+"name": "FastAPI介绍",
+"m": 19
+},
+{
+"id": 128,
+"name": "FastAPI环境搭建",
+"m": 8
+},
+{
+"id": 129,
+"name": "FastAPI第一个程序与启动项目",
+"m": 16
+},
+{
+"id": 130,
+"name": "用AI生成API接口",
+"m": 22
+},
+{
+"id": 131,
+"name": "FastAPI路径参数",
+"m": 16
+},
+{
+"id": 132,
+"name": "FastAPI查询参数",
+"m": 14
+},
+{
+"id": 133,
+"name": "FastAPI请求体",
+"m": 12
+},
+{
+"id": 134,
+"name": "FastAPI请求参数类型验证",
+"m": 15
+},
+{
+"id": 135,
+"name": "请求参数验证_Query方式",
+"m": 15
+},
+{
+"id": 136,
+"name": "请求参数验证_Path方式",
+"m": 20
+},
+{
+"id": 137,
+"name": "请求参数验证_Field方式",
+"m": 24
+},
+{
+"id": 138,
+"name": "FastAPI表单数据",
+"m": 12
+},
+{
+"id": 139,
+"name": "FastAPI异步处理",
+"m": 19
+},
+{
+"id": 140,
+"name": "FastAPI文件上传1",
+"m": 20
+},
+{
+"id": 141,
+"name": "FastAPI文件上传2",
+"m": 13
+},
+{
+"id": 142,
+"name": "FastAPI请求对象Request",
+"m": 10
+},
+{
+"id": 143,
+"name": "响应类型_JSON格式",
+"m": 20
+},
+{
+"id": 144,
+"name": "响应类型_列表格式",
+"m": 10
+},
+{
+"id": 145,
+"name": "响应类型_数据过滤与分页",
+"m": 17
+},
+{
+"id": 146,
+"name": "响应类型_分页列表封装",
+"m": 8
+},
+{
+"id": 147,
+"name": "响应类型_文件格式",
+"m": 16
+},
+{
+"id": 148,
+"name": "响应类型_其它格式",
+"m": 15
+}
+]
+},
+{
+"name": "FastAPI ORM 生态",
+"courses": [
+{
+"id": 149,
+"name": "FastAPI的ORM生态",
+"m": 16
+},
+{
+"id": 150,
+"name": "ORM_tortoise的配置",
+"m": 14
+},
+{
+"id": 151,
+"name": "ORM_迁移工具",
+"m": 17
+},
+{
+"id": 152,
+"name": "ORM_模型定义",
+"m": 15
+},
+{
+"id": 153,
+"name": "ORM_模型定义实战",
+"m": 15
+},
+{
+"id": 154,
+"name": "ORM_增加数据_脚本模式",
+"m": 15
+},
+{
+"id": 155,
+"name": "ORM_增加数据_接口模式",
+"m": 5
+},
+{
+"id": 156,
+"name": "ORM_更新与删除数据",
+"m": 9
+},
+{
+"id": 157,
+"name": "ORM_查询数据",
+"m": 9
+},
+{
+"id": 158,
+"name": "ORM_了解关联关系",
+"m": 14
+},
+{
+"id": 159,
+"name": "ORM_1对1关系实现",
+"m": 14
+},
+{
+"id": 160,
+"name": "ORM_1对多关系实现",
+"m": 15
+},
+{
+"id": 161,
+"name": "ORM_多对多关系实现",
+"m": 17
+},
+{
+"id": 162,
+"name": "ORM_关联关系增加数据",
+"m": 16
+},
+{
+"id": 163,
+"name": "ORM_关联关系更新数据",
+"m": 9
+},
+{
+"id": 164,
+"name": "ORM_关联关系查询与删除数据",
+"m": 12
+}
+]
+},
+{
+"name": "FastAPI 高级特性",
+"courses": [
+{
+"id": 165,
+"name": "FastAPI中间件",
+"m": 17
+},
+{
+"id": 166,
+"name": "FastAPI中间件2",
+"m": 8
+},
+{
+"id": 167,
+"name": "FastAPI跨域资源共享",
+"m": 12
+},
+{
+"id": 168,
+"name": "跨域资源共享_实现",
+"m": 14
+},
+{
+"id": 169,
+"name": "FastAPI业务划分",
+"m": 20
+},
+{
+"id": 170,
+"name": "FastAPI项目结构",
+"m": 13
+},
+{
+"id": 171,
+"name": "FastAPI整合技能",
+"m": 21
+},
+{
+"id": 172,
+"name": "FastAPI创建工程目录",
+"m": 7
+},
+{
+"id": 173,
+"name": "FastAPI划分代码功能",
+"m": 17
+}
+]
+}
+]
+},
+{
+"name": "智能会议系统",
+"color": "#9B8FA8",
+"bg": "#9B8FA81a",
+"groups": [
+{
+"name": "第二大脑·智能会议系统",
+"courses": [
+{
+"id": 174,
+"name": "项目介绍",
+"m": 10
+},
+{
+"id": 175,
+"name": "Python环境搭建",
+"m": 5
+},
+{
+"id": 176,
+"name": "AI工具配置",
+"m": 11
+},
+{
+"id": 177,
+"name": "配置数据库服务",
+"m": 7
+},
+{
+"id": 178,
+"name": "ClaudeCode初始化项目",
+"m": 21
+},
+{
+"id": 179,
+"name": "ORM配置",
+"m": 16
+},
+{
+"id": 180,
+"name": "用户功能",
+"m": 17
+},
+{
+"id": 181,
+"name": "会议上传",
+"m": 9
+},
+{
+"id": 182,
+"name": "语音转文字",
+"m": 15
+},
+{
+"id": 183,
+"name": "Agent结构化分析",
+"m": 12
+},
+{
+"id": 184,
+"name": "综合测试",
+"m": 5
+},
+{
+"id": 185,
+"name": "前端项目生成",
+"m": 15
+},
+{
+"id": 186,
+"name": "综合测试与修复bug",
+"m": 16
+}
+]
+}
+]
+},
+{
+"name": "大模型核心原理与提示词工程",
+"color": "#C4A35A",
+"bg": "#C4A35A1a",
+"groups": [
+{
+"name": "大模型理论基础",
+"courses": [
+{
+"id": 187,
+"name": "AI的发展历程",
+"m": 16
+},
+{
+"id": 188,
+"name": "常见AI产品的类型",
+"m": 14
+},
+{
+"id": 189,
+"name": "什么是大模型",
+"m": 14
+},
+{
+"id": 190,
+"name": "大模型聊天产品的特殊能力",
+"m": 7
+},
+{
+"id": 191,
+"name": "大模型对行业发展的影响",
+"m": 11
+},
+{
+"id": 192,
+"name": "大模型的趋势与挑战",
+"m": 11
+},
+{
+"id": 193,
+"name": "全球AI发展现状",
+"m": 5
+},
+{
+"id": 194,
+"name": "常见大模型介绍",
+"m": 9
+},
+{
+"id": 195,
+"name": "大模型版本区分",
+"m": 10
+},
+{
+"id": 196,
+"name": "大模型硬件选择",
+"m": 7
+},
+{
+"id": 197,
+"name": "大模型应用开发入门案例(1)",
+"m": 8
+},
+{
+"id": 198,
+"name": "大模型应用开发入门案例(2)",
+"m": 8
+},
+{
+"id": 199,
+"name": "调用模型时的请求体",
+"m": 12
+},
+{
+"id": 200,
+"name": "非流式输出的响应结构",
+"m": 8
+},
+{
+"id": 201,
+"name": "流式输出的响应结构",
+"m": 6
+},
+{
+"id": 202,
+"name": "使用大模型进行情感分析",
+"m": 6
+},
+{
+"id": 203,
+"name": "使用大模型进行图像识别",
+"m": 6
+},
+{
+"id": 204,
+"name": "使用大模型进行图像生成",
+"m": 8
+},
+{
+"id": 205,
+"name": "函数功能的使用(1)",
+"m": 9
+},
+{
+"id": 206,
+"name": "函数功能的使用(2)",
+"m": 12
+}
+]
+},
+{
+"name": "提示词工程",
+"courses": [
+{
+"id": 207,
+"name": "提示词与提示词工程",
+"m": 11
+},
+{
+"id": 208,
+"name": "提示词的编写原则",
+"m": 13
+},
+{
+"id": 209,
+"name": "通用模型和推理模型的区别",
+"m": 10
+},
+{
+"id": 210,
+"name": "通用模式的提示词编写",
+"m": 10
+},
+{
+"id": 211,
+"name": "推理模式的提示词编写",
+"m": 7
+},
+{
+"id": 212,
+"name": "提示词_设定提问者背景",
+"m": 5
+},
+{
+"id": 213,
+"name": "提示词_限制输出的格式",
+"m": 3
+},
+{
+"id": 214,
+"name": "提示词_使用分隔符",
+"m": 4
+},
+{
+"id": 215,
+"name": "提示词_零样本与少样本提示",
+"m": 4
+},
+{
+"id": 216,
+"name": "提示词_思维链",
+"m": 9
+},
+{
+"id": 217,
+"name": "提示词_思维树",
+"m": 6
+},
+{
+"id": 218,
+"name": "提示词_自我一致性",
+"m": 7
+},
+{
+"id": 219,
+"name": "提示词编写流程",
+"m": 7
+},
+{
+"id": 220,
+"name": "提示词编写流程案例",
+"m": 10
+},
+{
+"id": 221,
+"name": "利用大模型编写提示词(1)",
+"m": 11
+},
+{
+"id": 222,
+"name": "利用大模型编写提示词(2)",
+"m": 5
+},
+{
+"id": 223,
+"name": "提示词优化器",
+"m": 7
+},
+{
+"id": 224,
+"name": "Prompt攻击_提示词注入",
+"m": 8
+},
+{
+"id": 225,
+"name": "Prompt攻击_提示词泄露",
+"m": 7
+},
+{
+"id": 226,
+"name": "Prompt攻击_提示词越狱",
+"m": 4
+},
+{
+"id": 227,
+"name": "Prompt防范(1)",
+"m": 8
+},
+{
+"id": 228,
+"name": "Prompt防范(2)",
+"m": 11
+},
+{
+"id": 229,
+"name": "小红书文案生成器(1)",
+"m": 8
+},
+{
+"id": 230,
+"name": "小红书文案生成器(2)",
+"m": 6
+},
+{
+"id": 231,
+"name": "旅行规划定制系统(1)",
+"m": 9
+},
+{
+"id": 232,
+"name": "旅行规划定制系统(2)",
+"m": 7
+},
+{
+"id": 233,
+"name": "旅行规划定制系统(3)",
+"m": 8
+},
+{
+"id": 234,
+"name": "智能烹饪食谱推荐系统(1)",
+"m": 8
+},
+{
+"id": 235,
+"name": "智能烹饪食谱推荐系统(2)",
+"m": 6
+},
+{
+"id": 236,
+"name": "智能烹饪食谱推荐系统(3)",
+"m": 6
+}
+]
+}
+]
+},
+{
+"name": "AI Agent与工作流编排",
+"color": "#C9A0A0",
+"bg": "#C9A0A01a",
+"groups": [
+{
+"name": "Tool Calling与JSON Schema",
+"courses": [
+{
+"id": 237,
+"name": "ToolCalling概念与API设计",
+"m": 10
+},
+{
+"id": 238,
+"name": "ToolCalling初步体验",
+"m": 13
+},
+{
+"id": 239,
+"name": "JSONSchema的设计基础",
+"m": 8
+},
+{
+"id": 240,
+"name": "JSONSchema的自动生成",
+"m": 16
+},
+{
+"id": 241,
+"name": "Schema高级写法",
+"m": 8
+},
+{
+"id": 242,
+"name": "生成Schema与ToolCall结合",
+"m": 0
+},
+{
+"id": 243,
+"name": "Schema参数验证策略",
+"m": 13
+},
+{
+"id": 244,
+"name": "Schema参数验证策略实践",
+"m": 7
+}
+]
+},
+{
+"name": "Agent理论基础",
+"courses": [
+{
+"id": 245,
+"name": "Agent概念与应用场景",
+"m": 16
+},
+{
+"id": 246,
+"name": "Agent企业级架构概览",
+"m": 9
+},
+{
+"id": 247,
+"name": "Agent架构设计_决策机制",
+"m": 10
+},
+{
+"id": 248,
+"name": "Agent架构设计_ReAct实现策略",
+"m": 9
+},
+{
+"id": 249,
+"name": "ReAct实现策略(续)",
+"m": 21
+},
+{
+"id": 250,
+"name": "设计范式演进_传统AI",
+"m": 10
+},
+{
+"id": 251,
+"name": "设计范式演进_LLM时代",
+"m": 7
+},
+{
+"id": 252,
+"name": "Agent架构设计_底层技术",
+"m": 11
+},
+{
+"id": 253,
+"name": "Agent记忆系统",
+"m": 11
+},
+{
+"id": 254,
+"name": "Agent工具调用思想与接口设计",
+"m": 16
+},
+{
+"id": 255,
+"name": "Agent评估体系",
+"m": 13
+},
+{
+"id": 256,
+"name": "Agent开发流程",
+"m": 6
+}
+]
+},
+{
+"name": "LangChain核心",
+"courses": [
+{
+"id": 257,
+"name": "LangChain介绍",
+"m": 11
+},
+{
+"id": 258,
+"name": "LangChain环境搭建",
+"m": 11
+},
+{
+"id": 259,
+"name": "LangChain_通义模型",
+"m": 8
+},
+{
+"id": 260,
+"name": "LangChain_智谱模型",
+"m": 11
+},
+{
+"id": 261,
+"name": "LangChain_本地模型",
+"m": 14
+},
+{
+"id": 262,
+"name": "LLM模型特点与选择",
+"m": 18
+},
+{
+"id": 263,
+"name": "LLM模型的调用方式",
+"m": 13
+},
+{
+"id": 264,
+"name": "提示词_模板介绍",
+"m": 11
+},
+{
+"id": 265,
+"name": "PromptTemplate(1)",
+"m": 12
+},
+{
+"id": 266,
+"name": "PromptTemplate(2)",
+"m": 14
+},
+{
+"id": 267,
+"name": "ChatPromptTemplate",
+"m": 16
+},
+{
+"id": 268,
+"name": "FewShotPromptTemplate",
+"m": 17
+},
+{
+"id": 269,
+"name": "企业智能体_提示词管理策略",
+"m": 11
+},
+{
+"id": 270,
+"name": "提示词管理策略_json方式",
+"m": 20
+},
+{
+"id": 271,
+"name": "提示词管理策略_yaml方式",
+"m": 17
+},
+{
+"id": 272,
+"name": "格式化输出_介绍",
+"m": 15
+},
+{
+"id": 273,
+"name": "格式化输出_JSON",
+"m": 11
+},
+{
+"id": 274,
+"name": "格式化输出_Pydantic",
+"m": 10
+},
+{
+"id": 275,
+"name": "格式化输出_XML",
+"m": 8
+},
+{
+"id": 276,
+"name": "格式化输出_List",
+"m": 7
+},
+{
+"id": 277,
+"name": "格式化输出_自定义格式",
+"m": 14
+},
+{
+"id": 278,
+"name": "格式化输出_声明式模型",
+"m": 13
+},
+{
+"id": 279,
+"name": "LangChain链_链式调用",
+"m": 11
+},
+{
+"id": 280,
+"name": "LangChain链_LLMChain",
+"m": 7
+},
+{
+"id": 281,
+"name": "SimpleSequentialChain",
+"m": 10
+},
+{
+"id": 282,
+"name": "SequentialChain",
+"m": 8
+},
+{
+"id": 283,
+"name": "LCEL的使用",
+"m": 12
+},
+{
+"id": 284,
+"name": "Runnable",
+"m": 5
+},
+{
+"id": 285,
+"name": "RunnablePassthrough",
+"m": 15
+},
+{
+"id": 286,
+"name": "RunnableLambda",
+"m": 11
+},
+{
+"id": 287,
+"name": "RunnableMap",
+"m": 13
+},
+{
+"id": 288,
+"name": "RunnableBranch",
+"m": 15
+},
+{
+"id": 289,
+"name": "LCEL重写_LLMChain",
+"m": 13
+},
+{
+"id": 290,
+"name": "LCEL重写_SimpleSequentialChain",
+"m": 16
+},
+{
+"id": 291,
+"name": "LCEL重写_SequentialChain",
+"m": 11
+},
+{
+"id": 292,
+"name": "LCEL实现_RouterChain",
+"m": 11
+}
+]
+},
+{
+"name": "LangGraph工作流",
+"courses": [
+{
+"id": 293,
+"name": "LangGraph_应用场景",
+"m": 5
+},
+{
+"id": 294,
+"name": "核心概念与构建流程",
+"m": 13
+},
+{
+"id": 295,
+"name": "线性Graph",
+"m": 16
+},
+{
+"id": 296,
+"name": "状态规约器",
+"m": 16
+},
+{
+"id": 297,
+"name": "条件路由Graph",
+"m": 17
+},
+{
+"id": 298,
+"name": "循环结构Graph",
+"m": 20
+},
+{
+"id": 299,
+"name": "SubGraph1",
+"m": 11
+},
+{
+"id": 300,
+"name": "SubGraph2",
+"m": 14
+},
+{
+"id": 301,
+"name": "人工介入",
+"m": 21
+},
+{
+"id": 302,
+"name": "Stream与可视化",
+"m": 15
+},
+{
+"id": 303,
+"name": "并行执行",
+"m": 0
+},
+{
+"id": 304,
+"name": "工具系统介绍",
+"m": 5
+},
+{
+"id": 305,
+"name": "Tools是什么",
+"m": 8
+},
+{
+"id": 306,
+"name": "@tools+Pydantic",
+"m": 17
+},
+{
+"id": 307,
+"name": "ToolNode自动执行",
+"m": 18
+},
+{
+"id": 308,
+"name": "tools_condition",
+"m": 5
+},
+{
+"id": 309,
+"name": "CreateAgent函数",
+"m": 15
+},
+{
+"id": 310,
+"name": "工具错误处理介绍",
+"m": 11
+},
+{
+"id": 311,
+"name": "工具已知错误处理",
+"m": 5
+},
+{
+"id": 312,
+"name": "工具未知错误处理",
+"m": 7
+},
+{
+"id": 313,
+"name": "工具临时错误处理",
+"m": 8
+},
+{
+"id": 314,
+"name": "工具错误_三种策略组合",
+"m": 5
+},
+{
+"id": 315,
+"name": "多工具组合使用",
+"m": 10
+},
+{
+"id": 316,
+"name": "记忆系统介绍",
+"m": 5
+},
+{
+"id": 317,
+"name": "记忆系统分类",
+"m": 9
+},
+{
+"id": 318,
+"name": "短期记忆Checkpointer",
+"m": 17
+},
+{
+"id": 319,
+"name": "Agent+短期记忆",
+"m": 9
+},
+{
+"id": 320,
+"name": "长期记忆Checkpointer",
+"m": 13
+},
+{
+"id": 321,
+"name": "Agent+长期记忆1",
+"m": 10
+},
+{
+"id": 322,
+"name": "Agent+长期记忆2",
+"m": 0
+},
+{
+"id": 323,
+"name": "记忆持久化_环境搭建",
+"m": 10
+},
+{
+"id": 324,
+"name": "记忆持久化_实现",
+"m": 12
+}
+]
+},
+{
+"name": "MCP与工具系统",
+"courses": [
+{
+"id": 325,
+"name": "MCP介绍",
+"m": 10
+},
+{
+"id": 326,
+"name": "MCP与tool区别",
+"m": 8
+},
+{
+"id": 327,
+"name": "MCP服务_stdio模式",
+"m": 12
+},
+{
+"id": 328,
+"name": "MCP服务_streamable",
+"m": 5
+},
+{
+"id": 329,
+"name": "MCP客户端开发",
+"m": 9
+},
+{
+"id": 330,
+"name": "LangGraph调用MCP",
+"m": 14
+},
+{
+"id": 331,
+"name": "StateGraph调用MCP",
+"m": 15
+},
+{
+"id": 332,
+"name": "LangGraph调用云MCP",
+"m": 14
+},
+{
+"id": 333,
+"name": "MCP与工具的决策",
+"m": 7
+},
+{
+"id": 334,
+"name": "人机协作介绍",
+"m": 8
+},
+{
+"id": 335,
+"name": "人机协作_审批模式",
+"m": 16
+},
+{
+"id": 336,
+"name": "人机协作_反馈模式",
+"m": 16
+},
+{
+"id": 337,
+"name": "人机协作_智能审批",
+"m": 11
+},
+{
+"id": 338,
+"name": "人机协作架构总结",
+"m": 10
+},
+{
+"id": 339,
+"name": "Agent综合实战1",
+"m": 11
+},
+{
+"id": 340,
+"name": "Agent综合实战2",
+"m": 8
+},
+{
+"id": 341,
+"name": "多Agent协作介绍",
+"m": 7
+},
+{
+"id": 342,
+"name": "多Agent协作_Supervisor实现",
+"m": 17
+},
+{
+"id": 343,
+"name": "RAG+Agent搭配使用",
+"m": 15
+},
+{
+"id": 344,
+"name": "LangSmith介绍",
+"m": 6
+},
+{
+"id": 345,
+"name": "LangSmith初步体验",
+"m": 14
+},
+{
+"id": 346,
+"name": "LangSmith检测LCEL",
+"m": 10
+},
+{
+"id": 347,
+"name": "LangSmith检测LangGraph",
+"m": 13
+},
+{
+"id": 348,
+"name": "A2A协议介绍",
+"m": 14
+},
+{
+"id": 349,
+"name": "A2A极简Server开发1",
+"m": 17
+},
+{
+"id": 350,
+"name": "A2A极简Server开发2",
+"m": 14
+},
+{
+"id": 351,
+"name": "A2A极简Client开发",
+"m": 13
+},
+{
+"id": 352,
+"name": "A2A完整Server开发",
+"m": 14
+},
+{
+"id": 353,
+"name": "A2A完整Client开发",
+"m": 13
+},
+{
+"id": 354,
+"name": "A2A集成LangGraph_Client开发",
+"m": 0
+},
+{
+"id": 355,
+"name": "A2A集成LangGraph_Server开发",
+"m": 17
+}
+]
+},
+{
+"name": "Agent Skills",
+"courses": [
+{
+"id": 356,
+"name": "Agent Skills是什么",
+"m": 7
+},
+{
+"id": 357,
+"name": "Agent Skills 环境搭建",
+"m": 10
+},
+{
+"id": 358,
+"name": "编写简单的Skill",
+"m": 11
+},
+{
+"id": 359,
+"name": "生成创意图片的Skill",
+"m": 10
+},
+{
+"id": 360,
+"name": "创建Skill的Skill",
+"m": 10
+},
+{
+"id": 361,
+"name": "推荐好用必用的Skill",
+"m": 0
+}
+]
+}
+]
+},
+{
+"name": "企业级RAG问答系统",
+"color": "#7B9E87",
+"bg": "#7B9E871a",
+"groups": [
+{
+"name": "项目基础与文档解析",
+"courses": [
+{
+"id": 362,
+"name": "项目介绍",
+"m": 15
+},
+{
+"id": 363,
+"name": "技术选型",
+"m": 15
+},
+{
+"id": 364,
+"name": "项目结构与初始化",
+"m": 14
+},
+{
+"id": 365,
+"name": "解析器基类",
+"m": 13
+},
+{
+"id": 366,
+"name": "PDF解析器1",
+"m": 13
+},
+{
+"id": 367,
+"name": "PDF解析器2",
+"m": 11
+},
+{
+"id": 368,
+"name": "测试PDF解析器",
+"m": 14
+},
+{
+"id": 369,
+"name": "GPU解析PDF",
+"m": 9
+},
+{
+"id": 370,
+"name": "文本清洗",
+"m": 15
+},
+{
+"id": 371,
+"name": "测试文本清洗",
+"m": 10
+},
+{
+"id": 372,
+"name": "表格转DataFrame",
+"m": 14
+},
+{
+"id": 373,
+"name": "合并表格提取数据",
+"m": 16
+},
+{
+"id": 374,
+"name": "测试表格功能",
+"m": 9
+}
+]
+},
+{
+"name": "智能分块",
+"courses": [
+{
+"id": 375,
+"name": "智能分块设计",
+"m": 10
+},
+{
+"id": 376,
+"name": "按段落分块1",
+"m": 14
+},
+{
+"id": 377,
+"name": "按段落分块2",
+"m": 11
+},
+{
+"id": 378,
+"name": "按句子分块",
+"m": 5
+},
+{
+"id": 379,
+"name": "按字符分块",
+"m": 7
+},
+{
+"id": 380,
+"name": "整合分割",
+"m": 8
+},
+{
+"id": 381,
+"name": "智能分块整体测试",
+"m": 7
+},
+{
+"id": 382,
+"name": "PDF模块整合",
+"m": 13
+}
+]
+},
+{
+"name": "多格式解析",
+"courses": [
+{
+"id": 383,
+"name": "Word解析模块",
+"m": 16
+},
+{
+"id": 384,
+"name": "测试Word解析模块",
+"m": 5
+},
+{
+"id": 385,
+"name": "MD解析模块",
+"m": 8
+},
+{
+"id": 386,
+"name": "测试MD解析模块",
+"m": 4
+},
+{
+"id": 387,
+"name": "HTML解析模块",
+"m": 9
+},
+{
+"id": 388,
+"name": "解析器工厂类",
+"m": 12
+},
+{
+"id": 389,
+"name": "测试解析器工厂类",
+"m": 10
+}
+]
+},
+{
+"name": "Web应用与API",
+"courses": [
+{
+"id": 390,
+"name": "创建Web应用",
+"m": 12
+},
+{
+"id": 391,
+"name": "解析上传文件API",
+"m": 13
+},
+{
+"id": 392,
+"name": "解析已存在文件API",
+"m": 8
+},
+{
+"id": 393,
+"name": "测试与优化API(1)",
+"m": 9
+},
+{
+"id": 394,
+"name": "测试与优化API(2)",
+"m": 13
+},
+{
+"id": 395,
+"name": "测试与优化API(3)",
+"m": 7
+}
+]
+},
+{
+"name": "嵌入模型",
+"courses": [
+{
+"id": 396,
+"name": "嵌入模块介绍与基类",
+"m": 5
+},
+{
+"id": 397,
+"name": "云平台嵌入模型工具",
+"m": 12
+},
+{
+"id": 398,
+"name": "阿里云嵌入模型测试",
+"m": 11
+},
+{
+"id": 399,
+"name": "智谱嵌入模型测试",
+"m": 4
+},
+{
+"id": 400,
+"name": "本地嵌入模型工具",
+"m": 8
+},
+{
+"id": 401,
+"name": "本地嵌入模型测试",
+"m": 5
+}
+]
+},
+{
+"name": "向量存储与检索",
+"courses": [
+{
+"id": 402,
+"name": "向量存储基类",
+"m": 9
+},
+{
+"id": 403,
+"name": "Chroma向量存储",
+"m": 17
+},
+{
+"id": 404,
+"name": "Chroma向量存储测试",
+"m": 6
+},
+{
+"id": 405,
+"name": "文档存储_添加文档",
+"m": 14
+},
+{
+"id": 406,
+"name": "文档存储_查询统计",
+"m": 12
+},
+{
+"id": 407,
+"name": "文档存储测试",
+"m": 10
+},
+{
+"id": 408,
+"name": "检索模块开发",
+"m": 14
+},
+{
+"id": 409,
+"name": "检索模块测试",
+"m": 13
+}
+]
+},
+{
+"name": "RAG全链路",
+"courses": [
+{
+"id": 410,
+"name": "LLM模块开发",
+"m": 10
+},
+{
+"id": 411,
+"name": "RAG模块开发1",
+"m": 11
+},
+{
+"id": 412,
+"name": "RAG模块开发2",
+"m": 11
+},
+{
+"id": 413,
+"name": "LLM与RAG测试",
+"m": 8
+},
+{
+"id": 414,
+"name": "配置文件与请求模型",
+"m": 13
+},
+{
+"id": 415,
+"name": "API依赖工具",
+"m": 11
+},
+{
+"id": 416,
+"name": "Chat路由开发1",
+"m": 10
+},
+{
+"id": 417,
+"name": "Chat路由开发2",
+"m": 8
+},
+{
+"id": 418,
+"name": "Chat路由配置",
+"m": 7
+},
+{
+"id": 419,
+"name": "Chat路由测试",
+"m": 11
+},
+{
+"id": 420,
+"name": "Upload追加功能",
+"m": 8
+},
+{
+"id": 421,
+"name": "调试Chat路由",
+"m": 8
+},
+{
+"id": 422,
+"name": "配置前端页面",
+"m": 12
+},
+{
+"id": 423,
+"name": "调试前端功能",
+"m": 8
+}
+]
+},
+{
+"name": "性能与响应优化",
+"courses": [
+{
+"id": 424,
+"name": "性能优化_向量模型缓存",
+"m": 9
+},
+{
+"id": 425,
+"name": "性能优化_离线模式",
+"m": 14
+},
+{
+"id": 426,
+"name": "性能优化_客户端创建",
+"m": 11
+},
+{
+"id": 427,
+"name": "性能优化_文件重复上传",
+"m": 15
+},
+{
+"id": 428,
+"name": "性能优化_检索缓存1",
+"m": 12
+},
+{
+"id": 429,
+"name": "性能优化_检索缓存2",
+"m": 10
+},
+{
+"id": 430,
+"name": "配置优化_向量参数",
+"m": 4
+},
+{
+"id": 431,
+"name": "响应优化_流式结果生成",
+"m": 12
+},
+{
+"id": 432,
+"name": "响应优化_流式接口开发",
+"m": 7
+},
+{
+"id": 433,
+"name": "响应优化_流式响应测试",
+"m": 5
+},
+{
+"id": 434,
+"name": "响应优化_项目测试",
+"m": 12
+}
+]
+}
+]
+},
+{
+"name": "企业级RAG系统架构与实现",
+"color": "#8DB5A0",
+"bg": "#8DB5A01a",
+"groups": [
+{
+"name": "向量数据库对比与选型",
+"courses": [
+{
+"id": 435,
+"name": "向量数据库概述与选型",
+"m": 21
+},
+{
+"id": 436,
+"name": "FAISS介绍",
+"m": 11
+},
+{
+"id": 437,
+"name": "环境搭建",
+"m": 8
+},
+{
+"id": 438,
+"name": "FAISS实践",
+"m": 23
+},
+{
+"id": 439,
+"name": "Milvus介绍",
+"m": 15
+},
+{
+"id": 440,
+"name": "Milvus安装",
+"m": 12
+},
+{
+"id": 441,
+"name": "Milvus创建集合",
+"m": 16
+},
+{
+"id": 442,
+"name": "Milvus增加数据与索引",
+"m": 8
+},
+{
+"id": 443,
+"name": "Milvus数据检索",
+"m": 11
+},
+{
+"id": 444,
+"name": "ES介绍",
+"m": 13
+},
+{
+"id": 445,
+"name": "ES安装",
+"m": 10
+},
+{
+"id": 446,
+"name": "ES增加数据与索引",
+"m": 15
+},
+{
+"id": 447,
+"name": "ES数据检索",
+"m": 9
+},
+{
+"id": 448,
+"name": "Pinecone介绍",
+"m": 10
+},
+{
+"id": 449,
+"name": "Pinecone建立索引",
+"m": 14
+},
+{
+"id": 450,
+"name": "Pinecone增加数据与查询",
+"m": 12
+},
+{
+"id": 451,
+"name": "Chroma/Qdrant/Weaviate介绍",
+"m": 11
+},
+{
+"id": 452,
+"name": "Chroma的使用",
+"m": 14
+},
+{
+"id": 453,
+"name": "Qdrant建立索引",
+"m": 13
+},
+{
+"id": 454,
+"name": "Qdrant增加数据与查询",
+"m": 12
+},
+{
+"id": 455,
+"name": "Weaviate服务的开启",
+"m": 11
+},
+{
+"id": 456,
+"name": "Weaviate创建集合",
+"m": 13
+},
+{
+"id": 457,
+"name": "Weaviate插入数据",
+"m": 10
+},
+{
+"id": 458,
+"name": "Weaviate向量检索",
+"m": 7
+},
+{
+"id": 459,
+"name": "Weaviate向量检索+payload",
+"m": 15
+},
+{
+"id": 460,
+"name": "选型决策与总结",
+"m": 12
+}
+]
+},
+{
+"name": "NoSQL数据库-Elasticsearch",
+"courses": [
+{
+"id": 461,
+"name": "全文检索",
+"m": 7
+},
+{
+"id": 462,
+"name": "倒排索引",
+"m": 6
+},
+{
+"id": 463,
+"name": "ES的出现&应用场景",
+"m": 7
+},
+{
+"id": 464,
+"name": "ES对比Sorl&数据结构",
+"m": 8
+},
+{
+"id": 465,
+"name": "安装ES服务",
+"m": 13
+},
+{
+"id": 466,
+"name": "安装kibana",
+"m": 8
+},
+{
+"id": 467,
+"name": "索引操作",
+"m": 12
+},
+{
+"id": 468,
+"name": "文档操作(1)",
+"m": 7
+},
+{
+"id": 469,
+"name": "文档操作(2)",
+"m": 7
+},
+{
+"id": 470,
+"name": "域的属性_index",
+"m": 5
+},
+{
+"id": 471,
+"name": "域的属性_type",
+"m": 3
+},
+{
+"id": 472,
+"name": "域的属性_store",
+"m": 5
+},
+{
+"id": 473,
+"name": "默认分词器",
+"m": 5
+},
+{
+"id": 474,
+"name": "IK分词器安装",
+"m": 6
+},
+{
+"id": 475,
+"name": "IK分词器词典",
+"m": 8
+},
+{
+"id": 476,
+"name": "拼音分词器",
+"m": 5
+},
+{
+"id": 477,
+"name": "自定义分词器",
+"m": 8
+},
+{
+"id": 478,
+"name": "搜索文档_准备工作",
+"m": 4
+},
+{
+"id": 479,
+"name": "搜索方式(1)",
+"m": 8
+},
+{
+"id": 480,
+"name": "搜索方式(2)",
+"m": 6
+},
+{
+"id": 481,
+"name": "复合搜索",
+"m": 7
+},
+{
+"id": 482,
+"name": "结果排序&分页查询",
+"m": 8
+},
+{
+"id": 483,
+"name": "高亮查询",
+"m": 6
+},
+{
+"id": 484,
+"name": "SQL查询",
+"m": 3
+}
+]
+},
+{
+"name": "RAG基础理论",
+"courses": [
+{
+"id": 485,
+"name": "检索增强生成_RAG",
+"m": 18
+},
+{
+"id": 486,
+"name": "RAG_架构全景图",
+"m": 11
+},
+{
+"id": 487,
+"name": "RAG_架构选择策略",
+"m": 11
+},
+{
+"id": 488,
+"name": "RAG与微调的选择策略",
+"m": 18
+}
+]
+},
+{
+"name": "RAG端到端快速体验",
+"courses": [
+{
+"id": 489,
+"name": "环境与数据准备",
+"m": 10
+},
+{
+"id": 490,
+"name": "文本解析与分块",
+"m": 19
+},
+{
+"id": 491,
+"name": "知识库初始化",
+"m": 18
+},
+{
+"id": 492,
+"name": "数据检索",
+"m": 8
+},
+{
+"id": 493,
+"name": "如何使用LLM服务平台",
+"m": 12
+},
+{
+"id": 494,
+"name": "LLM调用实践",
+"m": 11
+},
+{
+"id": 495,
+"name": "封装LLM函数",
+"m": 15
+},
+{
+"id": 496,
+"name": "封装问答函数",
+"m": 11
+},
+{
+"id": 497,
+"name": "上下文管理",
+"m": 15
+},
+{
+"id": 498,
+"name": "知识库调用",
+"m": 9
+},
+{
+"id": 499,
+"name": "pipeline集成",
+"m": 11
+},
+{
+"id": 500,
+"name": "pipeline集成_调试函数",
+"m": 10
+},
+{
+"id": 501,
+"name": "pipeline集成_优化初始化",
+"m": 8
+},
+{
+"id": 502,
+"name": "WEB界面开发",
+"m": 14
+}
+]
+}
+]
+},
+{
+"name": "Hermes-Agent 自我进化",
+"color": "#D4A88E",
+"bg": "#D4A88E1a",
+"groups": [
+{
+"name": "进化机制",
+"courses": [
+{
+"id": 503,
+"name": "Hermes Agent简介",
+"m": 10
+},
+{
+"id": 504,
+"name": "前置准备：安装前置软件",
+"m": 11
+},
+{
+"id": 505,
+"name": "Hermes Agent安装与部署",
+"m": 9
+},
+{
+"id": 506,
+"name": "接入应用(微信QQ飞书)",
+"m": 18
+},
+{
+"id": 507,
+"name": "第一个应用案例",
+"m": 9
+},
+{
+"id": 508,
+"name": "个性化定制",
+"m": 12
+}
+]
+},
+{
+"name": "工具与记忆",
+"courses": [
+{
+"id": 509,
+"name": "工具与工具集",
+"m": 9
+},
+{
+"id": 510,
+"name": "Agent Skills",
+"m": 17
+},
+{
+"id": 511,
+"name": "持久记忆",
+"m": 16
+},
+{
+"id": 512,
+"name": "皮肤与主题",
+"m": 11
+}
+]
+},
+{
+"name": "生产级能力",
+"courses": [
+{
+"id": 513,
+"name": "MCP扩展AI工具能力",
+"m": 13
+},
+{
+"id": 514,
+"name": "定时任务(Cron)",
+"m": 18
+},
+{
+"id": 515,
+"name": "Web仪表板",
+"m": 7
+}
+]
+}
+]
+},
+{
+"name": "Vibe Coding实践",
+"color": "#9B8FA8",
+"bg": "#9B8FA81a",
+"groups": [
+{
+"name": "Trae全功能解析",
+"courses": [
+{
+"id": 516,
+"name": "什么是Trae",
+"m": 9
+},
+{
+"id": 517,
+"name": "安装Trae",
+"m": 8
+},
+{
+"id": 518,
+"name": "侧边对话(Chat模式)",
+"m": 16
+},
+{
+"id": 519,
+"name": "Builder模式",
+"m": 9
+},
+{
+"id": 520,
+"name": "上下文",
+"m": 15
+},
+{
+"id": 521,
+"name": "配置自定义规则Rules",
+"m": 14
+},
+{
+"id": 522,
+"name": "多模态输入",
+"m": 7
+},
+{
+"id": 523,
+"name": "模型切换与自定义模型",
+"m": 16
+},
+{
+"id": 524,
+"name": "什么是MCP",
+"m": 17
+},
+{
+"id": 525,
+"name": "MCP百战智能旅行助手",
+"m": 20
+}
+]
+},
+{
+"name": "Cursor实战",
+"courses": [
+{
+"id": 526,
+"name": "什么是Cursor",
+"m": 16
+},
+{
+"id": 527,
+"name": "安装Cursor",
+"m": 7
+},
+{
+"id": 528,
+"name": "Cursor基本功能",
+"m": 10
+},
+{
+"id": 529,
+"name": "Cursor初体验",
+"m": 13
+},
+{
+"id": 530,
+"name": "Agent模式",
+"m": 13
+},
+{
+"id": 531,
+"name": "Ask模式",
+"m": 13
+},
+{
+"id": 532,
+"name": "Manual模式",
+"m": 8
+},
+{
+"id": 533,
+"name": "内联智能",
+"m": 8
+},
+{
+"id": 534,
+"name": "精准上下文",
+"m": 9
+},
+{
+"id": 535,
+"name": "Cursor Rule规则配置",
+"m": 13
+},
+{
+"id": 536,
+"name": "MDC语法",
+"m": 13
+},
+{
+"id": 537,
+"name": "用户Rule规则配置",
+"m": 7
+},
+{
+"id": 538,
+"name": "Chrome插件开发实战",
+"m": 16
+},
+{
+"id": 539,
+"name": "Chrome插件开发调试发布",
+"m": 12
+}
+]
+},
+{
+"name": "ClaudeCode实战",
+"courses": [
+{
+"id": 540,
+"name": "ClaudeCode介绍及安装部署",
+"m": 8
+},
+{
+"id": 541,
+"name": "ClaudeCode基础命令",
+"m": 9
+},
+{
+"id": 542,
+"name": "核心模式：按场景切换",
+"m": 8
+},
+{
+"id": 543,
+"name": "CLAUDE.md文档",
+"m": 11
+},
+{
+"id": 544,
+"name": "会话管理",
+"m": 4
+},
+{
+"id": 545,
+"name": "资源管理与批量任务",
+"m": 6
+},
+{
+"id": 546,
+"name": "避坑与进阶",
+"m": 6
+},
+{
+"id": 547,
+"name": "上下文规则配置",
+"m": 7
+},
+{
+"id": 548,
+"name": "自定义工具配置",
+"m": 15
+},
+{
+"id": 549,
+"name": "为Claude提供更多工具",
+"m": 12
+},
+{
+"id": 550,
+"name": "常见工作流程",
+"m": 8
+},
+{
+"id": 551,
+"name": "使用无头模式自动化基础设施",
+"m": 3
+},
+{
+"id": 552,
+"name": "多Claude协作工作流",
+"m": 0
+}
+]
+},
+{
+"name": "Codex App",
+"courses": [
+{
+"id": 553,
+"name": "Codex简介",
+"m": 4
+},
+{
+"id": 554,
+"name": "前置准备",
+"m": 7
+},
+{
+"id": 555,
+"name": "Codex安装与基本使用",
+"m": 10
+},
+{
+"id": 556,
+"name": "功能模块详解",
+"m": 17
+},
+{
+"id": 557,
+"name": "控制与引导",
+"m": 5
+},
+{
+"id": 558,
+"name": "计划模式",
+"m": 5
+},
+{
+"id": 559,
+"name": "代码管理",
+"m": 20
+},
+{
+"id": 560,
+"name": "记忆系统",
+"m": 7
+},
+{
+"id": 561,
+"name": "插件与自动化",
+"m": 7
+},
+{
+"id": 562,
+"name": "Codex Skills",
+"m": 9
+},
+{
+"id": 563,
+"name": "Codex MCP",
+"m": 5
+}
+]
+}
+]
+},
+{
+"name": "大模型高效微调与对齐技术（选修）",
+"color": "#C4A35A",
+"bg": "#C4A35A1a",
+"groups": [
+{
+"name": "微调基础",
+"courses": [
+{
+"id": 564,
+"name": "微调基础概念",
+"m": 12
+},
+{
+"id": 565,
+"name": "高效微调LoRA",
+"m": 11
+},
+{
+"id": 566,
+"name": "微调与强化学习知识蒸馏",
+"m": 17
+},
+{
+"id": 567,
+"name": "LORA微调DeepSeek_配置环境",
+"m": 12
+},
+{
+"id": 568,
+"name": "加载预训练模型",
+"m": 11
+},
+{
+"id": 569,
+"name": "加载数据集",
+"m": 19
+},
+{
+"id": 570,
+"name": "配置LoRA超参数",
+"m": 7
+},
+{
+"id": 571,
+"name": "训练模型和保存模型",
+"m": 8
+},
+{
+"id": 572,
+"name": "测试微调后的大模型",
+"m": 12
+},
+{
+"id": 573,
+"name": "模型上传hugging Face",
+"m": 12
+},
+{
+"id": 574,
+"name": "主流微调工具Unsloth",
+"m": 16
+},
+{
+"id": 575,
+"name": "AI时代的利器_Colab",
+"m": 9
+},
+{
+"id": 576,
+"name": "Unsloth_训练环境创建与依赖安装",
+"m": 17
+},
+{
+"id": 577,
+"name": "Unsloth_加载预训练模型",
+"m": 12
+},
+{
+"id": 578,
+"name": "Unsloth_准备数据集",
+"m": 19
+},
+{
+"id": 579,
+"name": "Unsloth_执行微调训练",
+"m": 15
+},
+{
+"id": 580,
+"name": "微调后的模型测试与效果对比",
+"m": 9
+},
+{
+"id": 581,
+"name": "模型保存的格式",
+"m": 19
+},
+{
+"id": 582,
+"name": "保存为GGUF格式",
+"m": 10
+},
+{
+"id": 583,
+"name": "Ollama运行HuggingFace下载的模型",
+"m": 13
+}
+]
+},
+{
+"name": "LLaMA-Factory实战",
+"courses": [
+{
+"id": 584,
+"name": "LLaMA-Factory框架_介绍",
+"m": 15
+},
+{
+"id": 585,
+"name": "环境安装",
+"m": 0
+},
+{
+"id": 586,
+"name": "训练数据集的格式",
+"m": 6
+},
+{
+"id": 587,
+"name": "文件目录解释",
+"m": 11
+},
+{
+"id": 588,
+"name": "数据集配置与注册",
+"m": 20
+},
+{
+"id": 589,
+"name": "注册中文医疗对话数据集",
+"m": 14
+},
+{
+"id": 590,
+"name": "大模型微调过程监控与实验可视化",
+"m": 9
+},
+{
+"id": 591,
+"name": "模型微调",
+"m": 13
+},
+{
+"id": 592,
+"name": "启动微调",
+"m": 13
+},
+{
+"id": 593,
+"name": "启动微调之数据集处理",
+"m": 8
+},
+{
+"id": 594,
+"name": "模型评估",
+"m": 6
+},
+{
+"id": 595,
+"name": "模型对话",
+"m": 10
+}
+]
+}
+]
+},
+{
+"name": "大数据处理与分布式检索技术（选修）",
+"color": "#6B8294",
+"bg": "#6B82941a",
+"groups": [
+{
+"name": "Spark概述与运行模式",
+"courses": [
+{
+"id": 596,
+"name": "课程介绍",
+"m": 8
+},
+{
+"id": 597,
+"name": "什么是Spark？",
+"m": 7
+},
+{
+"id": 598,
+"name": "Spark主要功能",
+"m": 6
+},
+{
+"id": 599,
+"name": "Spark与Hadoop",
+"m": 8
+},
+{
+"id": 600,
+"name": "Spark技术栈",
+"m": 6
+},
+{
+"id": 601,
+"name": "PySpark Vs Spark",
+"m": 4
+},
+{
+"id": 602,
+"name": "运行模式_概述",
+"m": 9
+},
+{
+"id": 603,
+"name": "WordCount一",
+"m": 10
+},
+{
+"id": 604,
+"name": "WordCount二",
+"m": 11
+},
+{
+"id": 605,
+"name": "Local模式安装",
+"m": 9
+},
+{
+"id": 606,
+"name": "Local模式WebUI",
+"m": 6
+},
+{
+"id": 607,
+"name": "Spark目录介绍",
+"m": 6
+},
+{
+"id": 608,
+"name": "SparkPi源码解析",
+"m": 10
+},
+{
+"id": 609,
+"name": "spark-submit",
+"m": 10
+},
+{
+"id": 610,
+"name": "Standalone架构分析",
+"m": 10
+},
+{
+"id": 611,
+"name": "Standalone模式安装一",
+"m": 10
+},
+{
+"id": 612,
+"name": "Standalone模式安装二",
+"m": 5
+},
+{
+"id": 613,
+"name": "Standalone启动测试",
+"m": 6
+},
+{
+"id": 614,
+"name": "Standalone执行任务",
+"m": 11
+},
+{
+"id": 615,
+"name": "查看历史日志WebUI",
+"m": 4
+},
+{
+"id": 616,
+"name": "StandaloneHA安装",
+"m": 4
+},
+{
+"id": 617,
+"name": "StandaloneHA测试",
+"m": 7
+},
+{
+"id": 618,
+"name": "Yarn模式概述",
+"m": 5
+},
+{
+"id": 619,
+"name": "Yarn模式安装",
+"m": 6
+},
+{
+"id": 620,
+"name": "Yarn Client",
+"m": 10
+},
+{
+"id": 621,
+"name": "Yarn Cluster",
+"m": 13
+},
+{
+"id": 622,
+"name": "spark-submit参数",
+"m": 6
+}
+]
+},
+{
+"name": "RDD核心",
+"courses": [
+{
+"id": 623,
+"name": "为什么需要RDD",
+"m": 4
+},
+{
+"id": 624,
+"name": "RDD定义",
+"m": 6
+},
+{
+"id": 625,
+"name": "五大特性总述",
+"m": 5
+},
+{
+"id": 626,
+"name": "五大特性1",
+"m": 6
+},
+{
+"id": 627,
+"name": "五大特性2",
+"m": 3
+},
+{
+"id": 628,
+"name": "五大特性3",
+"m": 5
+},
+{
+"id": 629,
+"name": "五大特性4",
+"m": 3
+},
+{
+"id": 630,
+"name": "五大特性5",
+"m": 6
+},
+{
+"id": 631,
+"name": "五大特性总结",
+"m": 3
+},
+{
+"id": 632,
+"name": "RDD创建概述",
+"m": 5
+},
+{
+"id": 633,
+"name": "并行化创建",
+"m": 20
+},
+{
+"id": 634,
+"name": "读取文件创建RDD",
+"m": 15
+},
+{
+"id": 635,
+"name": "读取小文件创建RDD",
+"m": 11
+},
+{
+"id": 636,
+"name": "算子概述",
+"m": 5
+},
+{
+"id": 637,
+"name": "转换算子map",
+"m": 14
+},
+{
+"id": 638,
+"name": "转换算子flatMap",
+"m": 7
+},
+{
+"id": 639,
+"name": "转换算子reduceByKey",
+"m": 9
+},
+{
+"id": 640,
+"name": "转换算子filter",
+"m": 5
+},
+{
+"id": 641,
+"name": "转换算子distinct",
+"m": 6
+},
+{
+"id": 642,
+"name": "转换算子glom",
+"m": 7
+},
+{
+"id": 643,
+"name": "转换算子groupBy",
+"m": 10
+},
+{
+"id": 644,
+"name": "转换算子groupByKey",
+"m": 8
+},
+{
+"id": 645,
+"name": "转换算子sortBy",
+"m": 12
+},
+{
+"id": 646,
+"name": "转换算子sortByKey",
+"m": 14
+},
+{
+"id": 647,
+"name": "转换算子union并集",
+"m": 7
+},
+{
+"id": 648,
+"name": "转换算子交集和差集",
+"m": 15
+},
+{
+"id": 649,
+"name": "转换算子关联算子",
+"m": 13
+},
+{
+"id": 650,
+"name": "转换算子partitionBy",
+"m": 15
+},
+{
+"id": 651,
+"name": "转换算子mapPartitions",
+"m": 13
+},
+{
+"id": 652,
+"name": "转换算子sample",
+"m": 19
+},
+{
+"id": 653,
+"name": "行动算子foreachPartition",
+"m": 10
+},
+{
+"id": 654,
+"name": "行动算子foreach",
+"m": 7
+},
+{
+"id": 655,
+"name": "行动算子saveAsTextFile",
+"m": 13
+},
+{
+"id": 656,
+"name": "行动算子countByKey",
+"m": 7
+},
+{
+"id": 657,
+"name": "行动算子reduce",
+"m": 4
+},
+{
+"id": 658,
+"name": "行动算子fold",
+"m": 8
+},
+{
+"id": 659,
+"name": "行动算子first_take_count",
+"m": 6
+},
+{
+"id": 660,
+"name": "行动算子top_takeOrdered",
+"m": 10
+},
+{
+"id": 661,
+"name": "行动算子takeSample",
+"m": 9
+}
+]
+},
+{
+"name": "SparkSQL",
+"courses": [
+{
+"id": 662,
+"name": "SparkSQL_简介",
+"m": 6
+},
+{
+"id": 663,
+"name": "SparkSQL_发展史",
+"m": 8
+},
+{
+"id": 664,
+"name": "与Hive区别",
+"m": 3
+},
+{
+"id": 665,
+"name": "SparkSession",
+"m": 2
+},
+{
+"id": 666,
+"name": "数据抽象",
+"m": 8
+},
+{
+"id": 667,
+"name": "DataFrame概述",
+"m": 4
+},
+{
+"id": 668,
+"name": "DataSet概述",
+"m": 7
+},
+{
+"id": 669,
+"name": "DataFrame构成",
+"m": 5
+},
+{
+"id": 670,
+"name": "创建项目",
+"m": 7
+},
+{
+"id": 671,
+"name": "createDataFrame创建DF",
+"m": 16
+},
+{
+"id": 672,
+"name": "toDF创建DF",
+"m": 15
+},
+{
+"id": 673,
+"name": "toDF使用样例类创建DF",
+"m": 9
+},
+{
+"id": 674,
+"name": "DataFrame转换RDD",
+"m": 7
+},
+{
+"id": 675,
+"name": "创建DataSet",
+"m": 11
+},
+{
+"id": 676,
+"name": "DataSet和RDD转换",
+"m": 10
+},
+{
+"id": 677,
+"name": "DataSet和DataFrame转换",
+"m": 8
+},
+{
+"id": 678,
+"name": "读写parquet文件",
+"m": 17
+},
+{
+"id": 679,
+"name": "读写parquet文件扩展",
+"m": 6
+},
+{
+"id": 680,
+"name": "读写text文件",
+"m": 10
+},
+{
+"id": 681,
+"name": "读写json文件",
+"m": 13
+},
+{
+"id": 682,
+"name": "读写csv文件",
+"m": 12
+},
+{
+"id": 683,
+"name": "JDBC读MySQL",
+"m": 13
+},
+{
+"id": 684,
+"name": "JDBC写MySQL",
+"m": 14
+},
+{
+"id": 685,
+"name": "SparkOnHive概述",
+"m": 4
+},
+{
+"id": 686,
+"name": "SparkOnHive配置",
+"m": 9
+},
+{
+"id": 687,
+"name": "SparkOnHive代码开发一",
+"m": 9
+},
+{
+"id": 688,
+"name": "SparkOnHive代码开发二",
+"m": 18
+},
+{
+"id": 689,
+"name": "SparkOnHive代码集群提交",
+"m": 14
+},
+{
+"id": 690,
+"name": "DSL API",
+"m": 19
+},
+{
+"id": 691,
+"name": "数据去重",
+"m": 9
+},
+{
+"id": 692,
+"name": "functions包",
+"m": 13
+},
+{
+"id": 693,
+"name": "SQL API",
+"m": 13
+},
+{
+"id": 694,
+"name": "SQL API实战",
+"m": 6
+},
+{
+"id": 695,
+"name": "自定义函数概述",
+"m": 9
+},
+{
+"id": 696,
+"name": "自定义UDF函数",
+"m": 13
+},
+{
+"id": 697,
+"name": "自定义UDF函数扩展",
+"m": 16
+},
+{
+"id": 698,
+"name": "ArrayType返回值类型的UDF",
+"m": 10
+},
+{
+"id": 699,
+"name": "UDAF函数Old一",
+"m": 9
+},
+{
+"id": 700,
+"name": "UDAF函数Old二",
+"m": 9
+},
+{
+"id": 701,
+"name": "UDAF函数Old三",
+"m": 9
+},
+{
+"id": 702,
+"name": "UDAF函数Old四",
+"m": 8
+},
+{
+"id": 703,
+"name": "UDAF函数New一",
+"m": 11
+},
+{
+"id": 704,
+"name": "UDAF函数New二",
+"m": 10
+},
+{
+"id": 705,
+"name": "UDAF函数New三",
+"m": 9
+},
+{
+"id": 706,
+"name": "开窗函数概述",
+"m": 11
+},
+{
+"id": 707,
+"name": "开窗函数实战",
+"m": 19
+}
+]
+},
+{
+"name": "SparkStreaming",
+"courses": [
+{
+"id": 708,
+"name": "SparkStreaming概述",
+"m": 9
+},
+{
+"id": 709,
+"name": "架构",
+"m": 13
+},
+{
+"id": 710,
+"name": "创建项目",
+"m": 6
+},
+{
+"id": 711,
+"name": "WordCount",
+"m": 13
+},
+{
+"id": 712,
+"name": "数据抽象",
+"m": 4
+},
+{
+"id": 713,
+"name": "RDD队列创建DStream",
+"m": 8
+},
+{
+"id": 714,
+"name": "自定义数据源一",
+"m": 9
+},
+{
+"id": 715,
+"name": "自定义数据源二",
+"m": 11
+},
+{
+"id": 716,
+"name": "DStream无状态转换",
+"m": 5
+},
+{
+"id": 717,
+"name": "DStream无状态转换transform",
+"m": 8
+},
+{
+"id": 718,
+"name": "DStream有状态转换",
+"m": 14
+},
+{
+"id": 719,
+"name": "窗口操作reduceByKeyAndWindow概述",
+"m": 7
+},
+{
+"id": 720,
+"name": "窗口操作reduceByKeyAndWindow实战",
+"m": 10
+},
+{
+"id": 721,
+"name": "窗口操作reduceByKeyAndWindow优化",
+"m": 4
+},
+{
+"id": 722,
+"name": "窗口操作Window",
+"m": 10
+},
+{
+"id": 723,
+"name": "输出",
+"m": 8
+},
+{
+"id": 724,
+"name": "优雅关闭一",
+"m": 11
+},
+{
+"id": 725,
+"name": "优雅关闭二",
+"m": 13
+},
+{
+"id": 726,
+"name": "优雅关闭测试",
+"m": 6
+},
+{
+"id": 727,
+"name": "整合Kafka模式",
+"m": 10
+},
+{
+"id": 728,
+"name": "整合Kafka开发一",
+"m": 11
+},
+{
+"id": 729,
+"name": "整合Kafka开发二",
+"m": 10
+},
+{
+"id": 730,
+"name": "整合Kafka测试",
+"m": 0
+}
+]
+}
+]
+}
+];
+
+/* ============ 存储 Key ============ */
+const K = { ck:'llm-v52', plan:'llm-plan-v52', ai:'llm-ai-cfg-v2', ov:'ov-v52' };
+
+/* ============ 工具 ============ */
+const $ = s=>document.querySelector(s);
+const view = ()=>$('#view');
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+const _LS=(function(){try{return window.localStorage;}catch(e){return null;}})();
+const _mem={};let _noPersist=false;
+try{_LS.setItem('__wbtest__','1');_LS.removeItem('__wbtest__');}catch(e){_noPersist=true;}
+function lsGet(k){try{return _LS.getItem(k);}catch(e){return k in _mem?_mem[k]:null;}}
+function lsSet(k,v){try{_LS.setItem(k,v);}catch(e){_mem[k]=v;}}
+function lsDel(k){try{_LS.removeItem(k);}catch(e){delete _mem[k];}}
+function load(k,def){try{const v=lsGet(k);return v?JSON.parse(v):def;}catch(e){return def;}}
+function save(k,v){lsSet(k,JSON.stringify(v));}
+function dateStr(d){d=d||new Date();const z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());}
+function fmtMin(m){m=Math.round(m)||0;if(m<60)return m+'min';const h=Math.floor(m/60),r=m%60;return r?h+'h'+r+'m':h+'h';}
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2200);}
+
+/* ============ 状态 ============ */
+let ck = load(K.ck,{done:{},at:{}});          // {done:{cid:true}, at:{cid:'YYYY-MM-DD'}}
+let pl = load(K.plan,{});                     // {'YYYY-MM-DD':[{id,text,done}]}
+let aicfg = load(K.ai,{url:'',key:'',model:'gpt-4o-mini'});
+let ov = load(K.ov,{modRename:{},grpRename:{},grpHidden:{},courseRename:{},custom:{}});
+let curNav='home', curMod=0, curDate=dateStr(), selDate=dateStr();
+let learnFilter='all', learnSearch='', editMode=false;
+
+function persistCK(){save(K.ck,ck);}
+function persistPlan(){save(K.plan,pl);}
+function persistAI(){save(K.ai,aicfg);}
+function persistOV(){save(K.ov,ov);}
+
+/* 首次访问注入示例计划（含 1 条逾期）*/
+(function seed(){
+  if(lsGet('llm-seeded-v2'))return;
+  const y=new Date();y.setDate(y.getDate()-1);const ystr=dateStr(y);
+  const tItems=[{id:90001,text:'今日完成 1 门 Agent 课程',done:false},{id:90002,text:'复习大模型理论基础笔记',done:false}];
+  const yItems=[{id:90003,text:'（示例·逾期）昨天的计划：补看 Tool Calling 课程',done:false}];
+  pl[dateStr()]=tItems;pl[ystr]=yItems;
+  lsSet('llm-seedkeys-v2',JSON.stringify({[dateStr()]:[90001,90002],[ystr]:[90003]}));
+  persistPlan();lsSet('llm-seeded-v2','1');
+})();
+
+/* ============ 课程访问（含覆盖） ============ */
+function gkey(mi,gi){return mi+'-'+gi;}
+function grpName(mi,gi){return ov.grpRename[gkey(mi,gi)]||COURSES[mi].groups[gi].name;}
+function grpHidden(mi,gi){return !!ov.grpHidden[gkey(mi,gi)];}
+function courseName(c){return ov.courseRename[c.id]||c.name;}
+function customOf(mi,gi){return ov.custom[gkey(mi,gi)]||[];}
+function effCourses(mi,gi){
+  const base=COURSES[mi].groups[gi].courses;
+  return base.concat(customOf(mi,gi));
+}
+function isDone(cid){return !!ck.done[cid];}
+function totalCourseMin(){let s=0;for(const m of COURSES)for(const g of m.groups)for(const c of g.courses)s+=c.m;return s;}
+
+/* ============ 统计 ============ */
+function stats(){
+  let done=0,doneMin=0,todayMin=0,weekMin=0,monthMin=0;
+  const now=new Date();const y=now.getFullYear(),mo=now.getMonth();
+  const dow=(now.getDay()+6)%7;const wkStart=new Date(now);wkStart.setDate(now.getDate()-dow);wkStart.setHours(0,0,0,0);
+  const monStart=new Date(y,mo,1);
+  for(const m of COURSES)for(const g of m.groups)for(const c of g.courses){
+    if(isDone(c.id)){done++;doneMin+=c.m;
+      const d=ck.at[c.id];if(d===dateStr())todayMin+=c.m;
+      const dt=new Date(d+'T00:00:00');
+      if(dt>=wkStart)weekMin+=c.m;
+      if(dt.getFullYear()===y&&dt.getMonth()===mo)monthMin+=c.m;
+    }
+  }
+  return {done,doneMin,todayMin,weekMin,monthMin,total:730,totalMin:totalCourseMin()};
+}
+function streak(){
+  const set=new Set(Object.values(ck.at||{}).filter(Boolean));
+  if(!set.size)return 0;
+  let d=new Date();
+  if(!set.has(dateStr(d))&&!set.has(dateStr(new Date(d-864e5))))return 0;
+  if(!set.has(dateStr(d)))d=new Date(d-864e5);
+  let s=0;while(set.has(dateStr(d))){s++;d=new Date(d-864e5);}return s;
+}
+
+/* ============ AI 调用（OpenAI 兼容，失败回退） ============ */
+const QUOTES_MOTI=[
+  '每一步微小的坚持，都是未来惊艳的伏笔。',
+  '你不是在追赶技术，你是在成为技术本身。',
+  '今天搞懂一个概念，明天就少一个盲区。',
+  '大模型的世界没有天花板，只有你的好奇心边界。',
+  '把复杂拆成小块，Agent 也是这样思考的。',
+  '学 AI 最酷的事：你写的每一行，都在教机器理解世界。',
+  '别怕慢，怕的是停。进度条会替你记得努力。',
+  '今天的小卡，是通往架构师之路的铺路石。',
+  '与其焦虑学不完，不如先点亮眼前这一课。',
+  '你正在训练自己——这个模型，名叫「未来的你」。'
+];
+const QUOTES_COMF=[
+  '卡住很正常，连 Transformer 也是被一篇篇论文喂出来的。',
+  '抱抱你～这章本来就难，休息一下再战不丢人。',
+  '每个高手都经历过「完全看不懂」的阶段，你不是一个人。',
+  '深呼吸，把这块拆成更小的步子，一步一脚印就好。',
+  '学不会不是你的问题，是讲义的问题。换个角度再来。',
+  '你已经比昨天的自己强了，这就值得骄傲。',
+  '累了就歇会儿，灵感往往在散步时冒出来。',
+  '别和别人比进度，你的路线独一无二。'
+];
+function rnd(a){return a[Math.floor(Math.random()*a.length)];}
+async function callAI(system,user){
+  if(!aicfg.url||!aicfg.key)return null;
+  try{
+    const r=await fetch(aicfg.url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+aicfg.key},
+      body:JSON.stringify({model:aicfg.model||'gpt-4o-mini',messages:[{role:'system',content:system},{role:'user',content:user}],temperature:.85,max_tokens:220})});
+    if(!r.ok)return null;const j=await r.json();return (j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||'').trim()||null;
+  }catch(e){return null;}
+}
+
+/* ============ 导航 ============ */
+const NAVS=[
+  {id:'home',label:'首页',icon:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>'},
+  {id:'plan',label:'计划统计',icon:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>'},
+  {id:'learn',label:'项目学习',icon:'<path d="M4 5h16v14H4z"/><path d="M9 9l3 3 3-3M12 12v4"/>'},
+  {id:'settings',label:'设置',icon:'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3 1a7 7 0 0 0-1.7-1l-.3-2.6h-4l-.3 2.6a7 7 0 0 0-1.7 1l-2.3-1-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 1.7 1l.3 2.6h4l.3-2.6a7 7 0 0 0 1.7-1l2.3 1 2-3.4-2-1.5a7 7 0 0 0 .1-1z"/>'}
+];
+function buildNav(){
+  const n=$('#nav');n.innerHTML='';
+  NAVS.forEach(v=>{const b=document.createElement('button');b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">'+v.icon+'</svg><span>'+esc(v.label)+'</span>';
+    if(v.id===curNav)b.classList.add('on');b.onclick=()=>{go(v.id);closeDrawer();};n.appendChild(b);});
+}
+function go(id){curNav=id;$('#ptitle').textContent=NAVS.find(x=>x.id===id).label;buildNav();render();closeDrawer();}
+function openDrawer(){$('#sidebar').classList.add('open');$('#mask').classList.add('show');}
+function closeDrawer(){$('#sidebar').classList.remove('open');$('#mask').classList.remove('show');}
+
+/* ============ 渲染分发 ============ */
+function render(){const v=view();
+  if(curNav==='home')v.innerHTML=renderHome();
+  else if(curNav==='plan')v.innerHTML=renderPlan();
+  else if(curNav==='learn')v.innerHTML=renderLearn();
+  else v.innerHTML=renderSettings();
+  bind();
+}
+
+/* ---------- 首页 ---------- */
+function renderHome(){
+  const st=stats();const sk=streak();
+  const todayPlans=(pl[dateStr()]||[]).filter(p=>!p.done);
+  let tHTML='<div class="card today"><div class="h2"><span class="dot"></span>今天要处理</div>';
+  if(todayPlans.length){
+    tHTML+='<ul>'+todayPlans.map(p=>'<li><button class="btn sm primary" onclick="completePlan('+p.id+')">完成</button><span>'+esc(p.text)+'</span></li>').join('')+'</ul>';
+  }else{
+    // 找下一门未学课程
+    let nx=null;for(const m of COURSES){for(const g of m.groups){for(const c of g.courses){if(!isDone(c.id)){nx=c;break;}}if(nx)break;}if(nx)break;}
+    tHTML+='<ul><li><span>今日计划已清空 ✅'+(nx?' 继续打卡下一课：<b>'+esc(nx.name)+'</b>':'')+'</span></li></ul>';
+  }
+  tHTML+='</div>';
+
+  const moti='<div class="card moti" style="margin-top:18px"><div class="h2"><span class="dot"></span>每日勉励</div>'+
+    '<div class="big" id="motiText">'+esc(rnd(QUOTES_MOTI))+'</div>'+
+    '<button class="motibtn" onclick="refreshMoti()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>换一句</button></div>';
+
+  const statC='<div class="stats" style="margin-top:18px">'+
+    statCard('c1','连续天数',sk+' 天','<path d="M12 2v8l5 3"/>')+
+    statCard('c2','已学门数',st.done+' / '+st.total,'<path d="M4 6h16M4 12h10M4 18h7"/>')+
+    statCard('c3','已学时长',fmtMin(st.doneMin),'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>')+
+    statCard('c4','剩余时长',fmtMin(st.totalMin-st.doneMin),'<path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 3v9"/>')+
+    '</div>';
+
+  let mods='<div class="card" style="margin-top:18px"><div class="h2"><span class="dot"></span>各模块进度</div><div class="mods">';
+  COURSES.forEach((m,mi)=>{
+    let tot=0,dn=0;for(let gi=0;gi<m.groups.length;gi++){for(const c of effCourses(mi,gi)){tot++;if(isDone(c.id))dn++;}}
+    const pc=tot?Math.round(dn/tot*100):0;
+    mods+='<div class="mod" onclick="goLearn('+mi+')"><div class="nm" style="color:'+m.color+'">'+esc(modName(mi))+'</div>'+
+      '<div class="track"><div class="fill" style="width:'+pc+'%;background:linear-gradient(90deg,'+m.color+','+m.color+'aa);box-shadow:0 0 10px '+m.color+'"></div></div>'+
+      '<div class="pc">'+dn+'/'+tot+' · '+pc+'%</div></div>';
+  });
+  mods+='</div></div>';
+  return tHTML+moti+statC+mods;
+}
+function statCard(cls,label,val,icon){return '<div class="stat '+cls+'"><div class="v">'+esc(val)+'</div><div class="l">'+esc(label)+'</div>'+
+  '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">'+icon+'</svg></div>';}
+function refreshMoti(){const el=document.getElementById('motiText');if(!el)return;el.textContent='加载中…';
+  callAI('你是鼓励学习大模型技术的伙伴，用一句中文（不超过30字）激励用户，温暖有力，不要标点结尾。','我在学习大模型，给我一句今日勉励。')
+    .then(t=>{el.textContent=t||rnd(QUOTES_MOTI);});}
+function goLearn(mi){curNav='learn';curMod=mi;$('#ptitle').textContent='项目学习';buildNav();render();}
+
+/* ---------- 计划与统计 ---------- */
+function renderPlan(){
+  const st=stats();
+  const plans=(pl[selDate]||[]);
+  // 日历
+  const [y,mo]=selDate.split('-').map(Number);const first=new Date(y,mo-1,1);const fwd=(first.getDay()+6)%7;
+  const days=new Date(y,mo,0).getDate();
+  let cal='<div class="card"><div class="h2"><span class="dot"></span>打卡日历（高亮=有打卡）</div>'+
+    '<div class="plan-head"><button class="btn sm" onclick="shiftMonth(-1)">‹ 上月</button>'+
+    '<b style="font-size:14px">'+y+'年'+mo+'月</b><button class="btn sm" onclick="shiftMonth(1)">下月 ›</button>'+
+    '<button class="btn sm primary" onclick="selToday()">回到今天</button></div>'+
+    '<div class="cal"><div class="wd">一</div><div class="wd">二</div><div class="wd">三</div></div>';
+  cal+='<div class="cal">';
+  for(let i=0;i<fwd;i++)cal+='<div class="day dim"></div>';
+  const hitSet=new Set(Object.values(ck.at||{}).filter(Boolean));
+  for(let d=1;d<=days;d++){const ds=y+'-'+String(mo).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const cls='day'+(ds===selDate?' sel':'')+(ds===dateStr()?' today':'')+(hitSet.has(ds)?' hit':'');
+    cal+='<div class="'+cls+'" onclick="pickDate(\''+ds+'\')">'+d+'</div>';}
+  cal+='</div></div>';
+
+  // 计划列表
+  let plist='<div class="card" style="margin-top:18px"><div class="h2"><span class="dot"></span>每日计划 · '+selDate+'</div>'+
+    '<div class="plan-head"><input class="inp" id="planInp" placeholder="添加计划，回车保存…" onkeydown="if(event.key===\'Enter\')addPlan()"/>'+
+    '<button class="btn primary" onclick="addPlan()">添加</button></div>';
+  if(plans.length){
+    plist+='<ul style="list-style:none;margin:8px 0 0;padding:0">'+plans.map(p=>
+      '<li style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line)">'+
+      '<button class="btn sm '+(p.done?'':'primary')+'" onclick="togglePlan('+p.id+')">'+(p.done?'已完成':'完成')+'</button>'+
+      '<span style="flex:1;'+(p.done?'color:var(--mut);text-decoration:line-through':'')+'">'+esc(p.text)+'</span>'+
+      '<button class="btn sm danger" onclick="delPlan('+p.id+')">删</button></li>').join('')+'</ul>';
+  }else plist+='<p style="color:var(--mut);font-size:13px;margin:8px 0">这一天还没有计划，添加一个吧～</p>';
+  plist+='</div>';
+
+  // 时长统计
+  const tstat='<div class="stats" style="margin-top:18px">'+
+    statCard('c1','今日时长',fmtMin(st.todayMin),'<circle cx="12" cy="12" r="9"/>')+
+    statCard('c2','本周时长',fmtMin(st.weekMin),'<path d="M4 18V8M10 18V4M16 18v-6"/>')+
+    statCard('c3','本月时长',fmtMin(st.monthMin),'<rect x="4" y="4" width="16" height="16" rx="2"/>')+
+    statCard('c4','累计时长',fmtMin(st.doneMin),'<path d="M3 17l6-6 4 4 8-8"/>')+
+    '</div>';
+
+  // 成就
+  const ach=achievements(st);
+  let ag='<div class="card" style="margin-top:18px"><div class="h2"><span class="dot"></span>成就系统</div><div class="ach">';
+  ach.forEach(a=>{ag+='<div class="a '+(a.un?'un':'')+'"><div class="em">'+(a.un?'🏆':'🔒')+'</div><div class="an">'+esc(a.name)+'</div><div class="ad">'+esc(a.desc)+'</div></div>';});
+  ag+='</div></div>';
+
+  return cal+plist+tstat+ag;
+}
+function achievements(st){
+  const A=[
+    {name:'初次打卡',desc:'完成第一门课程',un:st.done>=1},
+    {name:'小试牛刀',desc:'完成 10 门',un:st.done>=10},
+    {name:'渐入佳境',desc:'完成 50 门',un:st.done>=50},
+    {name:'百课之师',desc:'完成 100 门',un:st.done>=100},
+    {name:'三百里程碑',desc:'完成 300 门',un:st.done>=300},
+    {name:'学海无涯',desc:'完成 500 门',un:st.done>=500},
+    {name:'登顶大师',desc:'完成全部 730 门',un:st.done>=730},
+    {name:'七日之约',desc:'连续打卡 7 天',un:streak()>=7},
+    {name:'月月坚持',desc:'连续打卡 30 天',un:streak()>=30},
+    {name:'十小时',desc:'累计学习 10 小时',un:st.doneMin>=600},
+    {name:'五十小时',desc:'累计学习 50 小时',un:st.doneMin>=3000},
+    {name:'百小时',desc:'累计学习 100 小时',un:st.doneMin>=6000},
+  ];
+  // 模块通关
+  let modDone=0;COURSES.forEach((m,mi)=>{let tot=0,dn=0;for(let gi=0;gi<m.groups.length;gi++)for(const c of effCourses(mi,gi)){tot++;if(isDone(c.id))dn++;}if(tot&&dn===tot)modDone++;});
+  A.push({name:'模块通关',desc:'完整学完一个模块',un:modDone>=1});
+  return A;
+}
+function shiftMonth(d){let [y,mo]=selDate.split('-').map(Number);mo+=d;if(mo<1){mo=12;y--;}if(mo>12){mo=1;y++;}selDate=y+'-'+String(mo).padStart(2,'0')+'-01';render();}
+function selToday(){selDate=dateStr();render();}
+function pickDate(ds){selDate=ds;render();}
+function addPlan(){const i=$('#planInp');const t=i.value.trim();if(!t){toast('请输入计划内容');return;}if(!pl[selDate])pl[selDate]=[];pl[selDate].push({id:Date.now(),text:t,done:false});persistPlan();render();}
+function togglePlan(id){const a=pl[selDate];if(!a)return;const p=a.find(x=>x.id===id);if(p){p.done=!p.done;persistPlan();render();}}
+function delPlan(id){const a=pl[selDate];if(!a)return;pl[selDate]=a.filter(x=>x.id!==id);persistPlan();render();}
+function completePlan(id){const a=pl[dateStr()];if(!a)return;const p=a.find(x=>x.id===id);if(p){p.done=true;persistPlan();render();}}
+
+/* ---------- 项目学习 ---------- */
+function renderLearn(){
+  let tabs='<div class="tabs">'+COURSES.map((m,mi)=>{
+    const active=mi===curMod;
+    let btn='<button class="'+(active?'on':'')+'" onclick="switchMod('+mi+')" style="'+(active?'border-color:'+m.color:'')+'">'+esc(modName(mi))+'</button>';
+    if(active&&editMode)btn+='<button class="mod-rename" onclick="renameMod('+mi+')">✎ 编辑</button>';
+    return btn;
+  }).join('');
+  if(editMode)tabs+='<button class="mod-rename" onclick="addModule()" style="border-style:dashed">＋ 新模块</button>';
+  tabs+='</div>';
+
+  const toolbar='<div class="toolbar"><input class="inp" placeholder="搜索课程名…" value="'+esc(learnSearch)+'" oninput="learnSearch=this.value;refreshLearnBody()" id="searchInp"/>'+
+    '<select class="inp" style="flex:0 0 auto;max-width:150px" onchange="learnFilter=this.value;refreshLearnBody()">'+
+    '<option value="all"'+(learnFilter==='all'?' selected':'')+'>全部</option>'+
+    '<option value="done"'+(learnFilter==='done'?' selected':'')+'>已学</option>'+
+    '<option value="undone"'+(learnFilter==='undone'?' selected':'')+'>未学</option></select>'+
+    '<button class="btn '+(editMode?'primary':'')+'" onclick="toggleEdit()">'+(editMode?'✓ 退出编辑':'✎ 编辑模式')+'</button></div>';
+
+  const cbar='<div class="create-bar">'+
+    '<button class="btn-sm primary" onclick="addGroup()">＋ 新分组</button>'+
+    '<span style="color:var(--mut);font-size:12px">｜</span>'+
+    '<button class="btn-sm" onclick="quickAddCourse()">＋ 快速添加课程</button>'+
+    '</div>';
+
+  return tabs+toolbar+(editMode?cbar:'')+'<div id="learnBody">'+learnBodyHTML()+'</div>';
+}
+function modName(mi){return ov.modRename[mi]||COURSES[mi].name;}
+function learnBodyHTML(){
+  let body='';
+  const m=COURSES[curMod];
+  for(let gi=0;gi<m.groups.length;gi++){
+    if(grpHidden(curMod,gi)&&!editMode)continue;
+    const gc=m.color;
+    const cs=effCourses(curMod,gi);
+    let tot=0,dn=0,tmin=0;cs.forEach(c=>{tot++;tmin+=c.m;if(isDone(c.id))dn++;});
+    const gname=grpName(curMod,gi);
+    let gh='<div class="gh" style="--gc:'+gc+'">'+
+      '<span class="gn" style="color:'+gc+'">'+esc(gname)+(grpHidden(curMod,gi)?' （已隐藏）':'')+'</span>'+
+      '<span class="meta">'+dn+'/'+tot+' 门 · '+fmtMin(tmin)+'</span>'+
+      '<button class="hug" title="求安慰" onclick="event.stopPropagation();comfort('+gi+')">🤗</button>'+
+      (editMode?'<button class="btn sm" onclick="event.stopPropagation();renameGrp('+gi+')">✎ 编辑</button>'+
+      '<button class="btn sm '+(grpHidden(curMod,gi)?'primary':'danger')+'" onclick="event.stopPropagation();toggleHide('+gi+')">'+(grpHidden(curMod,gi)?'显示':'隐藏')+'</button>'+
+      '<button class="btn sm danger" onclick="event.stopPropagation();delGroup('+gi+')">删除</button>':'')+
+      '</div>';
+    let gb='<div class="gb">';
+    cs.forEach(c=>{
+      const done=isDone(c.id);
+      const match=!learnSearch||courseName(c).toLowerCase().includes(learnSearch.toLowerCase());
+      if(!match)return;
+      if(learnFilter==='done'&&!done)return;
+      if(learnFilter==='undone'&&done)return;
+      gb+='<div class="course'+(done?' done':'')+'" data-cid="'+c.id+'">'+
+        '<div class="cb" onclick="toggleCourse('+c.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>'+
+        '<div class="cn">'+esc(courseName(c))+'</div>'+
+        '<div class="cm">'+fmtMin(c.m)+'</div>'+
+        (editMode?'<div class="ced"><button class="btn sm" onclick="renameCourse('+c.id+')">✎ 编辑</button><button class="btn sm danger" onclick="delCourse('+c.id+')">删</button></div>':'')+
+        '</div>';
+    });
+    if(editMode){
+      gb+='<div class="addcustom"><input placeholder="新课程名" id="cn'+gi+'"/><input placeholder="分钟" type="number" min="1" id="cm'+gi+'" style="max-width:90px"/><button class="btn sm primary" onclick="addCustom('+gi+')">添加</button></div>';
+    }
+    gb+='</div>';
+    if(gb.includes('class="course"')||editMode)body+='<div class="grp'+(grpHidden(curMod,gi)?' hidden-grp':'')+'" data-gi="'+gi+'">'+gh+gb+'</div>';
+  }
+  if(!body&&learnSearch)body='<div style="text-align:center;padding:40px 0;color:var(--mut);font-size:14px">没有找到匹配「<b style="color:var(--txt)">'+esc(learnSearch)+'</b>」的课程</div>';
+  return body;
+}
+function refreshLearnBody(){const lb=document.getElementById('learnBody');if(lb)lb.innerHTML=learnBodyHTML();}
+function switchMod(mi){curMod=mi;render();}
+function toggleEdit(){editMode=!editMode;render();}
+
+/* ---- 三级改名（行内编辑，避免被预览环境拦截的 prompt） ---- */
+function findCourse(cid){for(const m of COURSES)for(const g of m.groups)for(const c of g.courses)if(c.id===cid)return c;return {name:''};}
+function inlineEdit(el,val,onSave){
+  if(!el)return;
+  el.innerHTML='<input class="inline-edit" value="'+esc(val)+'"/>';
+  const inp=el.querySelector('.inline-edit');
+  inp.addEventListener('click',e=>e.stopPropagation());
+  inp.focus();inp.select();
+  let done=false;
+  function commit(){if(done)return;done=true;const v=inp.value.trim();if(v)onSave(v);else render();}
+  function cancel(){if(done)return;done=true;render();}
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();commit();}else if(e.key==='Escape'){e.preventDefault();cancel();}});
+  inp.addEventListener('blur',commit);
+}
+function renameMod(mi){const el=document.querySelector('.tabs button.on');inlineEdit(el,modName(mi),v=>{ov.modRename[mi]=v;persistOV();render();});}
+function renameGrp(gi){const grp=document.querySelector('.grp[data-gi="'+gi+'"]');const el=grp?grp.querySelector('.gn'):null;inlineEdit(el,grpName(curMod,gi),v=>{ov.grpRename[gkey(curMod,gi)]=v;persistOV();render();});}
+function toggleHide(gi){const k=gkey(curMod,gi);if(grpHidden(curMod,gi))delete ov.grpHidden[k];else ov.grpHidden[k]=true;persistOV();render();}
+function renameCourse(cid){const el=document.querySelector('.course[data-cid="'+cid+'"] .cn');inlineEdit(el,courseName(findCourse(cid)),v=>{ov.courseRename[cid]=v;persistOV();render();});}
+
+/* ---- 弹窗工具（替代被预览环境拦截的 prompt/confirm） ---- */
+function openModal(html,onMount){
+  const r=document.getElementById('modalRoot');
+  r.innerHTML='<div class="modal-mask" onclick="modalClick(event)"><div class="modal" onclick="event.stopPropagation()">'+html+'</div></div>';
+  r.style.display='block';
+  if(onMount)onMount(r.querySelector('.modal'));
+}
+function modalClick(e){if(e.target.classList.contains('modal-mask'))closeModal();}
+function closeModal(){const r=document.getElementById('modalRoot');r.style.display='none';r.innerHTML='';}
+let _askCb=null,_confCb=null;
+function askText(title,def,cb){_askCb=cb;openModal('<div class="modal-h">'+esc(title)+'</div><input class="inp modal-inp" id="mtInp" value="'+esc(def||'')+'" /><div class="modal-btns"><button class="btn" onclick="closeModal()">取消</button><button class="btn primary" onclick="askOk()">确定</button></div>',function(m){const i=m.querySelector('#mtInp');i.focus();i.select();i.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();askOk();}else if(e.key==='Escape'){closeModal();}});});}
+function askOk(){const v=document.getElementById('mtInp').value.trim();closeModal();const cb=_askCb;_askCb=null;if(cb)cb(v);}
+function askConfirm(msg,cb){_confCb=cb;openModal('<div class="modal-h">请确认</div><div class="modal-msg">'+esc(msg)+'</div><div class="modal-btns"><button class="btn" onclick="closeModal()">取消</button><button class="btn danger" onclick="confOk()">确认</button></div>');}
+function confOk(){closeModal();const cb=_confCb;_confCb=null;if(cb)cb();}
+
+/* ---- 三级创建 ---- */
+function addModule(){
+  askText('输入新大模块名称：','',v=>{
+    if(!v)return;
+    const hues=[180,270,320,145,35,200,50];
+    const h=hues[COURSES.length%hues.length];
+    COURSES.push({name:v,color:'hsl('+h+',65%,60%)',bg:'hsla('+h+',65%,60%,.1)',groups:[]});
+    toast('已添加模块「'+v+'」');curMod=COURSES.length-1;persistOV();render();
+  });
+}
+function addGroup(){
+  askText('为「'+modName(curMod)+'」添加新分组名称：','',v=>{
+    if(!v)return;
+    COURSES[curMod].groups.push({name:v,courses:[]});
+    toast('已添加分组「'+v+'」');persistOV();render();
+  });
+}
+function quickAddCourse(){
+  const m=COURSES[curMod];
+  const opts=m.groups.map((g,i)=>'<option value="'+i+'">'+esc(grpName(curMod,i))+'</option>').join('');
+  openModal('<div class="modal-h">添加课程到「'+esc(modName(curMod))+'」</div>'+
+    '<div class="modal-row"><label>目标分组</label><select class="inp" id="qcGrp">'+opts+'</select></div>'+
+    '<div class="modal-row"><label>课程名称</label><input class="inp" id="qcName" placeholder="如：项目介绍"/></div>'+
+    '<div class="modal-row"><label>时长（分钟）</label><input class="inp" id="qcMin" type="number" min="1" value="10"/></div>'+
+    '<div class="modal-btns"><button class="btn" onclick="closeModal()">取消</button><button class="btn primary" onclick="qcSubmit()">添加</button></div>',
+    function(b){const n=b.querySelector('#qcName');n.focus();n.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();qcSubmit();}});});
+}
+function qcSubmit(){
+  const gi=parseInt(document.getElementById('qcGrp').value);
+  const n=document.getElementById('qcName').value.trim();
+  const mm=parseInt(document.getElementById('qcMin').value)||10;
+  closeModal();
+  if(!n){toast('请输入课程名');return;}
+  addCustomWithName(gi,n,Math.max(1,mm));
+}
+function addCustomWithName(gi,name,mins){
+  const id='c_'+Date.now()+'_'+Math.floor(Math.random()*999);
+  const k=gkey(curMod,gi);
+  if(!ov.custom[k])ov.custom[k]=[];
+  ov.custom[k].push({id,name:name,m:mins});
+  persistOV();toast('已添加课程「'+name+'」');render();
+}
+function addCustom(gi){const n=$('#cn'+gi).value.trim(),mm=$('#cm'+gi).value;if(!n){toast('请输入课程名');return;}addCustomWithName(gi,n,Math.max(1,parseInt(mm)||10));$('#cn'+gi).value='';$('#cm'+gi).value='';}
+
+/* ---- 删除（仅自定义内容） ---- */
+function delGroup(gi){
+  const baseLen=COURSES[curMod].groups[gi].courses.length;
+  if(baseLen>0){askConfirm('该分组包含 '+baseLen+' 门内置课程，删除后仍会保留（仅隐藏）。确认隐藏？',()=>{ov.grpHidden[gkey(curMod,gi)]=true;persistOV();toast('已隐藏该分组');render();});return;}
+  ov.grpHidden[gkey(curMod,gi)]=true;persistOV();toast('已隐藏该分组');render();
+}
+function delCourse(cid){
+  for(const mi in ov.custom){for(const gi in ov.custom[mi]){const arr=ov.custom[mi][gi];const idx=arr.findIndex(c=>c.id===cid);if(idx>=0){arr.splice(idx,1);persistOV();toast('已删除课程');render();return;}}}
+  if(ck.done[cid]){delete ck.done[cid];delete ck.at[cid];persistCK();toast('已取消打卡');render();}
+}
+function toggleCourse(cid){
+  if(ck.done[cid]){delete ck.done[cid];delete ck.at[cid];}else{ck.done[cid]=true;ck.at[cid]=dateStr();}
+  persistCK();
+  if(learnFilter!=='all'){refreshLearnBody();return;}
+  const el=document.querySelector('.course[data-cid="'+cid+'"]');
+  if(el)el.classList.toggle('done');
+  const grp=el&&el.closest('.grp');
+  if(grp){
+    const gi=+grp.dataset.gi;
+    let dn=0;effCourses(curMod,gi).forEach(c=>{if(isDone(c.id))dn++;});
+    const tot=effCourses(curMod,gi).length;
+    let tmin=0;effCourses(curMod,gi).forEach(c=>tmin+=c.m);
+    const meta=grp.querySelector('.gh .meta');if(meta)meta.textContent=dn+'/'+tot+' 门 · '+fmtMin(tmin);
+  }
+}
+function comfort(gi){const gname=grpName(curMod,gi);const mname=modName(curMod);
+  const box=document.createElement('div');box.className='card moti';box.style.marginTop='14px';
+  box.innerHTML='<div class="h2"><span class="dot"></span>🤗 '+esc(gname)+' · 来自小助手的安慰</div><div class="big" id="cf'+gi+'">正在为你准备温暖的话…</div>';
+  $('#learnBody').prepend(box);
+  callAI('你是陪伴学习大模型技术的暖心伙伴，用 2-3 句中文温柔安慰正在某个难点上受挫的学习者，具体提到他学的模块和分组，不要使用标点结尾也不要使用 emoji',
+    '我正在学「'+mname+'」的「'+gname+'」部分，感觉有点难有点累，安慰我一下')
+    .then(t=>{const el=document.getElementById('cf'+gi);if(el)el.textContent=t||rnd(QUOTES_COMF);});
+}
+
+/* ---------- 设置 ---------- */
+let deferredPrompt=null;
+function renderSettings(){
+  let ai='<div class="card set-sec"><div class="h2"><span class="dot"></span>AI 配置（OpenAI 兼容）</div><div class="kv">'+
+    '<label>API 地址（/v1/chat/completions 之前的部分）</label><input class="inp" id="aiUrl" value="'+esc(aicfg.url)+'" placeholder="https://api.openai.com/v1/chat/completions"/>'+
+    '<label>API Key</label><input class="inp" id="aiKey" value="'+esc(aicfg.key)+'" placeholder="sk-..." type="password"/>'+
+    '<label>模型</label><select class="inp" id="aiModel">'+
+      ['gpt-4o-mini','gpt-4o','deepseek-chat','deepseek-reasoner','qwen-plus','qwen-max','glm-4-plus','claude-3-5-sonnet','custom'].map(m=>'<option value="'+m+'"'+(aicfg.model===m?' selected':'')+'>'+m+'</option>').join('')+
+    '</select>'+
+    '<button class="btn primary" onclick="saveAI()">保存 AI 配置</button>'+
+    '<p style="color:var(--mut);font-size:12px;margin:4px 0 0">留空则「每日勉励 / 求安慰」自动回退到本地暖心语录。注意跨域（CORS）可能限制部分接口。</p></div></div>';
+
+  let pwa='<div class="card set-sec"><div class="h2"><span class="dot"></span>安装与 PWA</div>'+
+    '<div class="setrow"><button class="btn primary pwabtn" id="pwaBtn">安装到桌面 / 主屏</button>'+
+    '<span style="color:var(--mut);font-size:12px" id="pwaHint">若按钮未出现，可用浏览器「添加到主屏幕」。</span></div>'+
+    '<p style="color:var(--mut);font-size:12px;margin-top:8px">本应用已支持离线访问（Service Worker 缓存）。</p></div>';
+
+  let data='<div class="card set-sec danger-zone"><div class="h2"><span class="dot"></span>数据管理</div><div class="setrow">'+
+    '<button class="btn" onclick="exportData()">导出 JSON 备份</button>'+
+    '<button class="btn" onclick="document.getElementById(\'imp\').click()">合并导入</button>'+
+    '<input type="file" id="imp" accept="application/json" style="display:none" onchange="importData(this)"/>'+
+    '<button class="btn" onclick="restoreHidden()">恢复隐藏分组</button>'+
+    '<button class="btn danger" onclick="clearSamples()">清空示例计划</button>'+
+    '<button class="btn danger" onclick="resetAll()">重置全部数据</button>'+
+    '</div><p style="color:var(--mut);font-size:12px;margin-top:8px">合并导入会保留已有打卡与计划，仅补充缺失项。「重置」将清空本地所有数据（不可恢复）。</p></div>';
+
+  return ai+pwa+data;
+}
+function saveAI(){aicfg={url:$('#aiUrl').value.trim(),key:$('#aiKey').value.trim(),model:$('#aiModel').value};persistAI();toast('AI 配置已保存');}
+function exportData(){const all={_app:'llm-checkin',_v:51,ck,pl,aicfg,ov};const blob=new Blob([JSON.stringify(all,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='llm-checkin-backup-'+dateStr()+'.json';a.click();toast('已导出备份');}
+function importData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);
+  if(d.ck){for(const k in d.ck.done)ck.done[k]=ck.done[k]||d.ck.done[k];for(const k in d.ck.at)ck.at[k]=ck.at[k]||d.ck.at[k];}
+  if(d.pl){for(const k in d.pl)pl[k]=(pl[k]||[]).concat(d.pl[k].filter(x=>(pl[k]||[]).every(y=>y.id!==x.id)));}
+  if(d.ov){ov.modRename=Object.assign(ov.modRename,d.ov.modRename||{});ov.grpRename=Object.assign(ov.grpRename,d.ov.grpRename||{});ov.grpHidden=Object.assign(ov.grpHidden,d.ov.grpHidden||{});ov.courseRename=Object.assign(ov.courseRename,d.ov.courseRename||{});ov.custom=Object.assign(ov.custom,d.ov.custom||{});}
+  if(d.aicfg)aicfg=Object.assign(aicfg,d.aicfg);
+  persistCK();persistPlan();persistOV();persistAI();toast('已合并导入');render();}catch(e){toast('导入失败：文件格式错误');}};r.readAsText(f);}
+function restoreHidden(){ov.grpHidden={};persistOV();toast('已恢复所有隐藏分组');render();}
+function clearSamples(){
+  try{const sk=JSON.parse(lsGet('llm-seedkeys-v2')||'{}');
+    for(const d in sk){(pl[d]||[]).forEach((_,i)=>{});if(pl[d]){pl[d]=pl[d].filter(p=>!sk[d].includes(p.id));if(!pl[d].length)delete pl[d];}}
+  }catch(e){}
+  lsDel('llm-seedkeys-v2');lsDel('llm-seeded-v2');persistPlan();toast('示例计划已清空');render();
+}
+function resetAll(){askConfirm('确定清空全部打卡、计划、配置与自定义数据？此操作不可恢复！',()=>{
+  ['llm-v52','llm-plan-v52','llm-ai-cfg-v2','ov-v52','llm-seeded-v2'].forEach(k=>lsDel(k));
+  ck={done:{},at:{}};pl={};aicfg={url:'',key:'',model:'gpt-4o-mini'};ov={grpRename:{},grpHidden:{},courseRename:{},custom:{}};toast('已全部重置');render();
+});}
+
+/* ============ 事件绑定 ============ */
+function bind(){
+  $('#ham').onclick=openDrawer;
+  $('#mask').onclick=closeDrawer;
+}
+/* PWA install */
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;const b=document.querySelector('.pwabtn');if(b){b.style.display='inline-block';b.onclick=()=>{deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>deferredPrompt=null);};}});
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
+
+/* ============ 启动 ============ */
+buildNav();render();
+if(_noPersist){const sw=document.getElementById('storeWarn');if(sw)sw.style.display='block';}
+</script>
+</body>
+</html>
