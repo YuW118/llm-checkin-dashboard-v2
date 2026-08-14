@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="cache-buster" content="1786742600">
+<meta name="cache-buster" content="1786742700">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0a14" />
@@ -51,11 +51,11 @@ a{color:var(--cyan)}
 .sb-foot{margin-top:auto;font-size:9px;color:var(--mut);text-align:center;line-height:1.5}
 /* main */
 .main{flex:1;min-width:0;display:flex;flex-direction:column}
-.topbar{display:none;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);
-  background:var(--panel);backdrop-filter:blur(12px);position:sticky;top:0;z-index:30}
-.ham{width:42px;height:42px;border-radius:12px;background:var(--panel2);display:grid;place-items:center}
+.topbar{display:none;align-items:center;gap:12px;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));border-bottom:1px solid var(--line);
+  background:var(--panel);backdrop-filter:blur(12px);position:sticky;top:0;z-index:30;min-height:48px}
+.ham{width:44px;height:44px;min-width:44px;min-height:44px;border-radius:12px;background:var(--panel2);display:grid;place-items:center;-webkit-tap-highlight-color:rgba(34,211,238,.25)}
 .ham svg{width:22px;height:22px}
-.topbar h1{font-size:16px;margin:0;font-weight:700}
+.topbar h1{font-size:16px;margin:0;font-weight:700;min-width:0}
 #view{padding:28px 20px;max-width:1080px;width:100%;margin:0 auto}
 /* cards */
 .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;
@@ -193,7 +193,8 @@ a{color:var(--cyan)}
 @media (max-width:768px){
   :root{--sb:0px;font-size:15px}
   .sidebar{position:fixed;left:0;top:0;bottom:0;width:248px;flex-basis:248px;
-    transform:translateX(-100%);transition:transform .28s ease;z-index:45;box-shadow:0 0 50px rgba(0,0,0,.55)}
+    transform:translateX(-100%);transition:transform .28s ease;z-index:45;box-shadow:0 0 50px rgba(0,0,0,.55);
+    padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
   .sidebar.open{transform:translateX(0)}
   .topbar{display:flex}
   .ham{width:44px;height:44px}
@@ -201,7 +202,7 @@ a{color:var(--cyan)}
   .nav button{flex:1 1 auto;width:100%;min-height:50px;flex-direction:row;justify-content:flex-start;
     align-items:center;gap:12px;padding:12px 16px;font-size:14.5px;border-radius:13px}
   .nav button svg{width:22px;height:22px}
-  #view{padding:18px 14px}
+  #view{padding:18px 14px;padding-bottom:max(18px,env(safe-area-inset-bottom))}
   .card{padding:16px}
   .stats{grid-template-columns:repeat(2,1fr);gap:10px}
   .stat .v{font-size:24px}
@@ -215,7 +216,7 @@ a{color:var(--cyan)}
 }
 /* 小手机：课程单列，分组头换行，输入框与表单占满整行 */
 @media (max-width:560px){
-  #view{padding:14px 12px}
+  #view{padding:14px 12px;padding-bottom:max(14px,env(safe-area-inset-bottom))}
   .card{padding:14px}
   .grp .gb{grid-template-columns:1fr}
   .grp .gh{padding:12px 14px;gap:6px 10px}
@@ -242,7 +243,7 @@ a{color:var(--cyan)}
   #view{padding:12px 10px}
   .grp .gb,.stats{grid-template-columns:1fr}
   .stat .v{font-size:22px}
-  .topbar{padding:10px 12px}
+  .topbar{padding-left:10px;padding-right:10px;padding-bottom:10px}
 }
 /* 桌面端细节增强 */
 @media (min-width:769px){
