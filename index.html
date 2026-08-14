@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="cache-buster" content="1786733200">
+<meta name="cache-buster" content="1786742400">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0a14" />
@@ -4221,7 +4221,13 @@ try{_LS.setItem('__wbtest__','1');_LS.removeItem('__wbtest__');}catch(e){_noPers
 function lsGet(k){try{return _LS.getItem(k);}catch(e){return k in _mem?_mem[k]:null;}}
 function lsSet(k,v){try{_LS.setItem(k,v);}catch(e){_mem[k]=v;}}
 function lsDel(k){try{_LS.removeItem(k);}catch(e){delete _mem[k];}}
-function load(k,def){try{const v=lsGet(k);return v?JSON.parse(v):def;}catch(e){return def;}}
+function load(k,def){try{const v=lsGet(k);if(v===null||v===undefined||v==='')return def;let p;try{p=JSON.parse(v);}catch(e){lsDel(k);return def;}
+  if(def===null||def===undefined)return p;
+  const isArr=Array.isArray(def),isObj=def&&typeof def==='object'&&!isArr;
+  if(isArr){if(!Array.isArray(p)){lsDel(k);return def;}return p;}
+  if(isObj){if(!p||typeof p!=='object'||Array.isArray(p)){lsDel(k);return def;}return Object.assign({},def,p);}
+  if(typeof p!==typeof def){lsDel(k);return def;}return p;
+}catch(e){return def;}}
 function save(k,v){lsSet(k,JSON.stringify(v));}
 function dateStr(d){d=d||new Date();const z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());}
 function fmtMin(m){m=Math.round(m)||0;if(m<60)return m+'min';const h=Math.floor(m/60),r=m%60;return r?h+'h'+r+'m':h+'h';}
@@ -4771,7 +4777,11 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPro
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
 
 /* ============ 启动 ============ */
-buildNav();render();
+function fatalRecovery(){var ks=['llm-v52','llm-plan-v52','llm-ai-cfg-v2','ov-v52','llm-struct-v53','llm-seeded-v2','llm-seedkeys-v2'];ks.forEach(function(k){try{localStorage.removeItem(k);}catch(e){}});location.reload();}
+try{buildNav();render();}catch(err){console.error('启动渲染失败，已进入数据恢复模式：',err);
+  var v=document.getElementById('view');
+  if(v){v.className='fatal';v.innerHTML='<div style="max-width:440px;margin:12vh auto;padding:28px 24px;background:#fff;border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.12);text-align:center;font-family:system-ui,sans-serif;color:#222"><div style="width:54px;height:54px;line-height:54px;margin:0 auto 14px;border-radius:50%;background:#fff3e0;color:#e65100;font-size:28px;font-weight:700">!</div><h2 style="margin:0 0 10px;font-size:20px">本地数据异常</h2><p style="margin:0 0 18px;color:#666;font-size:14px;line-height:1.6">检测到本地存储中部分数据已损坏，导致页面无法正常显示。点击下方按钮可清除本地数据并恢复默认内容（已部署的版本不受影响）。</p><button class="btn primary" onclick="fatalRecovery()" style="font-size:15px;padding:11px 22px">清除本地数据并恢复</button><p style="margin:14px 0 0;color:#999;font-size:12px">若仍异常，请在浏览器开发者工具 → Application → Storage 中清除本站数据后重试。</p></div>';}
+}
 if(_noPersist){const sw=document.getElementById('storeWarn');if(sw)sw.style.display='block';}
 </script>
 </body>
