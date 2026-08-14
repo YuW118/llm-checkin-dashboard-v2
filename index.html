@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="cache-buster" content="1786731200">
+<meta name="cache-buster" content="1786733200">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0a14" />
@@ -4241,6 +4241,14 @@ function persistAI(){save(K.ai,aicfg);}
 function persistOV(){save(K.ov,ov);}
 function persistStruct(){save(K.struct,COURSES);}
 let COURSES = load(K.struct, DEFAULT_COURSES);
+/* 健壮性：存储结构损坏（非有效数组/为空/模块字段缺失）时回退默认并清理坏键，避免页面空白 */
+(function repairStruct(){
+  const valid=m=>m&&typeof m.name==='string'&&Array.isArray(m.groups)&&m.groups.every(g=>g&&Array.isArray(g.courses));
+  if(!Array.isArray(COURSES)||!COURSES.length){COURSES=JSON.parse(JSON.stringify(DEFAULT_COURSES));lsDel(K.struct);return;}
+  const good=COURSES.filter(valid);
+  if(!good.length){COURSES=JSON.parse(JSON.stringify(DEFAULT_COURSES));lsDel(K.struct);}
+  else if(good.length!==COURSES.length){COURSES=good;persistStruct();}
+})();
 
 /* 首次访问注入示例计划（含 1 条逾期）*/
 (function seed(){
