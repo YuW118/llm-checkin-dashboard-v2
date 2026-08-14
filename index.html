@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="cache-buster" content="1786742500">
+<meta name="cache-buster" content="1786742600">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0a14" />
@@ -4878,7 +4878,7 @@ function learnBodyHTML(){
     let tot=0,dn=0,tmin=0;cs.forEach(c=>{tot++;tmin+=c.m;if(isDone(c.id))dn++;});
     const gname=grpName(curMod,gi);
     let gh='<div class="gh" style="--gc:'+gc+'">'+
-      '<span class="gn" style="color:'+gc+'">● '+esc(gname)+(grpHidden(curMod,gi)?' （已隐藏）':'')+'</span>'+
+      '<span class="gn"><span style="color:'+gc+'">●</span> '+esc(gname)+(grpHidden(curMod,gi)?' （已隐藏）':'')+'</span>'+
       '<span class="meta">'+dn+'/'+tot+' · 约'+fmtMin(tmin)+'</span>'+
       '<button class="hug" title="求安慰" onclick="event.stopPropagation();comfort('+gi+')">🤗 求安慰</button>'+
       (editMode?'<button class="btn sm" onclick="event.stopPropagation();renameGrp('+gi+')">✎ 编辑</button>'+
