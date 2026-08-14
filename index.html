@@ -4225,7 +4225,7 @@ function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show')
 let ck = load(K.ck,{done:{},at:{}});          // {done:{cid:true}, at:{cid:'YYYY-MM-DD'}}
 let pl = load(K.plan,{});                     // {'YYYY-MM-DD':[{id,text,done}]}
 let aicfg = load(K.ai,{url:'',key:'',model:'gpt-4o-mini'});
-let ov = load(K.ov,{modRename:{},grpRename:{},grpHidden:{},courseRename:{},custom:{}});
+let ov = load(K.ov,{modRename:{},grpRename:{},grpHidden:{},courseRename:{},courseDur:{},custom:{}});
 let curNav='home', curMod=0, curDate=dateStr(), selDate=dateStr();
 let learnFilter='all', learnSearch='', editMode=false;
 
@@ -4250,13 +4250,29 @@ function gkey(mi,gi){return mi+'-'+gi;}
 function grpName(mi,gi){return ov.grpRename[gkey(mi,gi)]||COURSES[mi].groups[gi].name;}
 function grpHidden(mi,gi){return !!ov.grpHidden[gkey(mi,gi)];}
 function courseName(c){return ov.courseRename[c.id]||c.name;}
+function courseMin(c){return ov.courseDur[c.id]!=null?ov.courseDur[c.id]:c.m;}
+/* 课程键：稳定唯一标识，用于定位/补充课程。内置课按 模块-分组-课id 推导；自定义课用存入的 key */
+function courseKey(c,mi,gi){
+  const arr=ov.custom[gkey(mi,gi)];
+  if(arr){const e=arr.find(x=>x.id===c.id);if(e&&e.key)return e.key;}
+  return 'M'+mi+'-G'+gi+'-C'+c.id;
+}
+function findCourseLoc(cid){
+  for(let mi=0;mi<COURSES.length;mi++)for(let gi=0;gi<COURSES[mi].groups.length;gi++){
+    const c=COURSES[mi].groups[gi].courses.find(x=>x.id===cid);
+    if(c)return {c,mi,gi};
+    const e=customOf(mi,gi).find(x=>x.id===cid);
+    if(e)return {c:e,mi,gi};
+  }
+  return {c:{name:''},mi:curMod,gi:0};
+}
 function customOf(mi,gi){return ov.custom[gkey(mi,gi)]||[];}
 function effCourses(mi,gi){
   const base=COURSES[mi].groups[gi].courses;
   return base.concat(customOf(mi,gi));
 }
 function isDone(cid){return !!ck.done[cid];}
-function totalCourseMin(){let s=0;for(const m of COURSES)for(const g of m.groups)for(const c of g.courses)s+=c.m;return s;}
+function totalCourseMin(){let s=0;for(const m of COURSES)for(const g of m.groups)for(const c of g.courses)s+=courseMin(c);return s;}
 
 /* ============ 统计 ============ */
 function stats(){
@@ -4265,11 +4281,11 @@ function stats(){
   const dow=(now.getDay()+6)%7;const wkStart=new Date(now);wkStart.setDate(now.getDate()-dow);wkStart.setHours(0,0,0,0);
   const monStart=new Date(y,mo,1);
   for(const m of COURSES)for(const g of m.groups)for(const c of g.courses){
-    if(isDone(c.id)){done++;doneMin+=c.m;
-      const d=ck.at[c.id];if(d===dateStr())todayMin+=c.m;
+    if(isDone(c.id)){done++;doneMin+=courseMin(c);
+      const d=ck.at[c.id];if(d===dateStr())todayMin+=courseMin(c);
       const dt=new Date(d+'T00:00:00');
-      if(dt>=wkStart)weekMin+=c.m;
-      if(dt.getFullYear()===y&&dt.getMonth()===mo)monthMin+=c.m;
+      if(dt>=wkStart)weekMin+=courseMin(c);
+      if(dt.getFullYear()===y&&dt.getMonth()===mo)monthMin+=courseMin(c);
     }
   }
   return {done,doneMin,todayMin,weekMin,monthMin,total:730,totalMin:totalCourseMin()};
@@ -4515,12 +4531,12 @@ function learnBodyHTML(){
       gb+='<div class="course'+(done?' done':'')+'" data-cid="'+c.id+'">'+
         '<div class="cb" onclick="toggleCourse('+c.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>'+
         '<div class="cn">'+esc(courseName(c))+'</div>'+
-        '<div class="cm">'+fmtMin(c.m)+'</div>'+
-        (editMode?'<div class="ced"><button class="btn sm" onclick="renameCourse('+c.id+')">✎ 编辑</button><button class="btn sm danger" onclick="delCourse('+c.id+')">删</button></div>':'')+
+        '<div class="cm">'+fmtMin(courseMin(c))+'</div>'+
+        (editMode?'<div class="ced"><button class="btn sm" onclick="editCourse('+c.id+')">✎ 编辑</button><button class="btn sm danger" onclick="delCourse('+c.id+')">删</button></div>':'')+
         '</div>';
     });
     if(editMode){
-      gb+='<div class="addcustom"><input placeholder="新课程名" id="cn'+gi+'"/><input placeholder="分钟" type="number" min="1" id="cm'+gi+'" style="max-width:90px"/><button class="btn sm primary" onclick="addCustom('+gi+')">添加</button></div>';
+      gb+='<div class="addcustom"><input placeholder="新课程名" id="cn'+gi+'"/><input placeholder="课程键(可选)" id="ck'+gi+'" style="max-width:120px"/><input placeholder="分钟" type="number" min="1" id="cm'+gi+'" style="max-width:90px"/><button class="btn sm primary" onclick="addCustom('+gi+')">添加</button></div>';
     }
     gb+='</div>';
     if(gb.includes('class="course"')||editMode)body+='<div class="grp'+(grpHidden(curMod,gi)?' hidden-grp':'')+'" data-gi="'+gi+'">'+gh+gb+'</div>';
@@ -4549,7 +4565,28 @@ function inlineEdit(el,val,onSave){
 function renameMod(mi){const el=document.querySelector('.tabs button.on');inlineEdit(el,modName(mi),v=>{ov.modRename[mi]=v;persistOV();render();});}
 function renameGrp(gi){const grp=document.querySelector('.grp[data-gi="'+gi+'"]');const el=grp?grp.querySelector('.gn'):null;inlineEdit(el,grpName(curMod,gi),v=>{ov.grpRename[gkey(curMod,gi)]=v;persistOV();render();});}
 function toggleHide(gi){const k=gkey(curMod,gi);if(grpHidden(curMod,gi))delete ov.grpHidden[k];else ov.grpHidden[k]=true;persistOV();render();}
-function renameCourse(cid){const el=document.querySelector('.course[data-cid="'+cid+'"] .cn');inlineEdit(el,courseName(findCourse(cid)),v=>{ov.courseRename[cid]=v;persistOV();render();});}
+function editCourse(cid){
+  const loc=findCourseLoc(cid);const c=loc.c;
+  const key=courseKey(c,loc.mi,loc.gi);
+  const nm=courseName(c);const min=courseMin(c);
+  openModal(
+    '<div class="modal-h">编辑课程</div>'+
+    '<div class="modal-msg">课程键：<code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:6px;font-size:12px">'+esc(key)+'</code></div>'+
+    '<div style="font-size:12px;color:var(--mut);margin:10px 0 4px">名称</div>'+
+    '<input class="inp modal-inp" id="ecName" value="'+esc(nm)+'"/>'+
+    '<div style="font-size:12px;color:var(--mut);margin:10px 0 4px">时长（分钟）</div>'+
+    '<input class="inp modal-inp" id="ecMin" type="number" min="1" value="'+esc(String(min))+'"/>'+
+    '<div class="modal-btns"><button class="btn" onclick="closeModal()">取消</button><button class="btn primary" onclick="saveCourse('+cid+')">保存</button></div>'
+  ,function(m){const i=m.querySelector('#ecName');i.focus();i.select();});
+}
+function saveCourse(cid){
+  const nm=document.getElementById('ecName').value.trim();
+  const mm=Math.max(1,parseInt(document.getElementById('ecMin').value)||10);
+  if(!nm){toast('请输入名称');return;}
+  ov.courseRename[cid]=nm;
+  ov.courseDur[cid]=mm;
+  persistOV();closeModal();toast('已保存课程修改');render();
+}
 
 /* ---- 弹窗工具（替代被预览环境拦截的 prompt/confirm） ---- */
 function openModal(html,onMount){
@@ -4601,14 +4638,17 @@ function qcSubmit(){
   if(!n){toast('请输入课程名');return;}
   addCustomWithName(gi,n,Math.max(1,mm));
 }
-function addCustomWithName(gi,name,mins){
-  const id='c_'+Date.now()+'_'+Math.floor(Math.random()*999);
+function addCustomWithName(gi,name,key,mins){
+  let id=key?('k_'+key):('c_'+Date.now()+'_'+Math.floor(Math.random()*999));
   const k=gkey(curMod,gi);
   if(!ov.custom[k])ov.custom[k]=[];
-  ov.custom[k].push({id,name:name,m:mins});
-  persistOV();toast('已添加课程「'+name+'」');render();
+  if(ov.custom[k].some(x=>x.id===id))id=id+'_'+Math.floor(Math.random()*999);
+  const entry={id,name:name,m:mins};
+  if(key)entry.key=key;
+  ov.custom[k].push(entry);
+  persistOV();toast('已添加课程「'+name+'」'+(key?'（键：'+key+'）':''));render();
 }
-function addCustom(gi){const n=$('#cn'+gi).value.trim(),mm=$('#cm'+gi).value;if(!n){toast('请输入课程名');return;}addCustomWithName(gi,n,Math.max(1,parseInt(mm)||10));$('#cn'+gi).value='';$('#cm'+gi).value='';}
+function addCustom(gi){const n=$('#cn'+gi).value.trim(),kk=$('#ck'+gi).value.trim(),mm=$('#cm'+gi).value;if(!n){toast('请输入课程名');return;}addCustomWithName(gi,n,kk,Math.max(1,parseInt(mm)||10));$('#cn'+gi).value='';$('#ck'+gi).value='';$('#cm'+gi).value='';}
 
 /* ---- 删除（仅自定义内容） ---- */
 function delGroup(gi){
@@ -4631,7 +4671,7 @@ function toggleCourse(cid){
     const gi=+grp.dataset.gi;
     let dn=0;effCourses(curMod,gi).forEach(c=>{if(isDone(c.id))dn++;});
     const tot=effCourses(curMod,gi).length;
-    let tmin=0;effCourses(curMod,gi).forEach(c=>tmin+=c.m);
+    let tmin=0;effCourses(curMod,gi).forEach(c=>tmin+=courseMin(c));
     const meta=grp.querySelector('.gh .meta');if(meta)meta.textContent=dn+'/'+tot+' 门 · '+fmtMin(tmin);
   }
 }
@@ -4673,12 +4713,12 @@ function renderSettings(){
   return ai+pwa+data;
 }
 function saveAI(){aicfg={url:$('#aiUrl').value.trim(),key:$('#aiKey').value.trim(),model:$('#aiModel').value};persistAI();toast('AI 配置已保存');}
-function exportData(){const all={_app:'llm-checkin',_v:51,ck,pl,aicfg,ov};const blob=new Blob([JSON.stringify(all,null,2)],{type:'application/json'});
+function exportData(){const all={_app:'llm-checkin',_v:52,ck,pl,aicfg,ov};const blob=new Blob([JSON.stringify(all,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='llm-checkin-backup-'+dateStr()+'.json';a.click();toast('已导出备份');}
 function importData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);
   if(d.ck){for(const k in d.ck.done)ck.done[k]=ck.done[k]||d.ck.done[k];for(const k in d.ck.at)ck.at[k]=ck.at[k]||d.ck.at[k];}
   if(d.pl){for(const k in d.pl)pl[k]=(pl[k]||[]).concat(d.pl[k].filter(x=>(pl[k]||[]).every(y=>y.id!==x.id)));}
-  if(d.ov){ov.modRename=Object.assign(ov.modRename,d.ov.modRename||{});ov.grpRename=Object.assign(ov.grpRename,d.ov.grpRename||{});ov.grpHidden=Object.assign(ov.grpHidden,d.ov.grpHidden||{});ov.courseRename=Object.assign(ov.courseRename,d.ov.courseRename||{});ov.custom=Object.assign(ov.custom,d.ov.custom||{});}
+  if(d.ov){ov.modRename=Object.assign(ov.modRename,d.ov.modRename||{});ov.grpRename=Object.assign(ov.grpRename,d.ov.grpRename||{});ov.grpHidden=Object.assign(ov.grpHidden,d.ov.grpHidden||{});ov.courseRename=Object.assign(ov.courseRename,d.ov.courseRename||{});ov.courseDur=Object.assign(ov.courseDur,d.ov.courseDur||{});ov.custom=Object.assign(ov.custom,d.ov.custom||{});}
   if(d.aicfg)aicfg=Object.assign(aicfg,d.aicfg);
   persistCK();persistPlan();persistOV();persistAI();toast('已合并导入');render();}catch(e){toast('导入失败：文件格式错误');}};r.readAsText(f);}
 function restoreHidden(){ov.grpHidden={};persistOV();toast('已恢复所有隐藏分组');render();}
@@ -4690,7 +4730,7 @@ function clearSamples(){
 }
 function resetAll(){askConfirm('确定清空全部打卡、计划、配置与自定义数据？此操作不可恢复！',()=>{
   ['llm-v52','llm-plan-v52','llm-ai-cfg-v2','ov-v52','llm-seeded-v2'].forEach(k=>lsDel(k));
-  ck={done:{},at:{}};pl={};aicfg={url:'',key:'',model:'gpt-4o-mini'};ov={grpRename:{},grpHidden:{},courseRename:{},custom:{}};toast('已全部重置');render();
+  ck={done:{},at:{}};pl={};aicfg={url:'',key:'',model:'gpt-4o-mini'};ov={grpRename:{},grpHidden:{},courseRename:{},courseDur:{},custom:{}};toast('已全部重置');render();
 });}
 
 /* ============ 事件绑定 ============ */
