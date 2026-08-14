@@ -2,7 +2,7 @@
  * 策略：导航请求「网络优先，失败回退缓存」；其余静态资源「缓存优先，失败回退网络」。
  * 注意：CACHE 使用 v52 命名，与旧版（llm-checkin-v51）完全隔离，互不干扰。
  */
-const CACHE = 'llm-checkin-v52-2';
+const CACHE = 'llm-checkin-v52-3';
 const ASSETS = [
   './',
   './index.html',

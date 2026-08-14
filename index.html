@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="cache-buster" content="1786640269">
+<meta name="cache-buster" content="1786778888">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0a14" />
@@ -4350,6 +4350,7 @@ function closeDrawer(){$('#sidebar').classList.remove('open');$('#mask').classLi
 
 /* ============ 渲染分发 ============ */
 function render(){const v=view();
+  v.className=editMode?'edit':'';
   if(curNav==='home')v.innerHTML=renderHome();
   else if(curNav==='plan')v.innerHTML=renderPlan();
   else if(curNav==='learn')v.innerHTML=renderLearn();
