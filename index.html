@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="cache-buster" content="1786742400">
+<meta name="cache-buster" content="1786742500">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0a14" />
@@ -19,8 +19,7 @@
   --sb:130px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;overflow-x:clip;overflow-wrap:break-word;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
 input,select,textarea{font-family:inherit}
 a{color:var(--cyan)}
@@ -131,8 +130,8 @@ a{color:var(--cyan)}
 .tabs .mod-rename:hover{color:var(--txt);border-color:var(--cyan)}
 .grp{margin-bottom:20px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel)}
 .grp.hidden-grp{opacity:.5}
-.grp .gh{display:flex;align-items:center;gap:10px;padding:14px 18px;
-  background:linear-gradient(90deg,var(--gc,var(--cyan))22,transparent)}
+.grp .gh{display:flex;align-items:center;gap:10px;padding:14px 18px;flex-wrap:wrap;
+  background:linear-gradient(90deg,var(--gc,var(--cyan)),transparent)}
 .grp .gh .gn{font-size:14px;font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .grp .gh .meta{font-size:11px;color:var(--mut);flex:0 0 auto}
 .grp .gh .hug{font-size:18px;flex:0 0 auto;filter:grayscale(.2)}
@@ -143,7 +142,7 @@ a{color:var(--cyan)}
   background:rgba(255,255,255,.04);border:1px solid var(--line);transition:.18s;position:relative;cursor:pointer}
 .course:hover{border-color:var(--cyan);background:rgba(255,255,255,.07)}
 .course .c-num{position:absolute;top:-1px;left:12px;width:22px;height:22px;border-radius:6px;
-  background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;
+  background:rgba(255,255,255,.07);border:1px solid var(--line);display:grid;place-items:center;
   font-size:11px;font-weight:700;color:var(--mut);transform:translateY(-50%)}
 .course .c-body{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;padding-left:18px}
 .course .cn{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -184,16 +183,71 @@ a{color:var(--cyan)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 /* pwa banner */
 .pwabtn{display:none}
+/* ============ 响应式布局 ============ */
+/* 平板：课程网格 2 列 */
+@media (max-width:900px){
+  .grp .gb{grid-template-columns:repeat(2,1fr)}
+  #view{max-width:100%}
+}
+/* 手机：侧栏变抽屉 + 汉堡菜单，导航纵向大按钮，进度行纵向堆叠 */
 @media (max-width:768px){
-  :root{--sb:0px}
-  .sidebar{position:fixed;left:0;top:0;width:230px;flex-basis:230px;transform:translateX(-100%);transition:.28s;z-index:45}
+  :root{--sb:0px;font-size:15px}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:248px;flex-basis:248px;
+    transform:translateX(-100%);transition:transform .28s ease;z-index:45;box-shadow:0 0 50px rgba(0,0,0,.55)}
   .sidebar.open{transform:translateX(0)}
   .topbar{display:flex}
-  #view{padding:16px 14px}
+  .ham{width:44px;height:44px}
+  .nav{flex-direction:column;gap:8px}
+  .nav button{flex:1 1 auto;width:100%;min-height:50px;flex-direction:row;justify-content:flex-start;
+    align-items:center;gap:12px;padding:12px 16px;font-size:14.5px;border-radius:13px}
+  .nav button svg{width:22px;height:22px}
+  #view{padding:18px 14px}
+  .card{padding:16px}
+  .stats{grid-template-columns:repeat(2,1fr);gap:10px}
+  .stat .v{font-size:24px}
+  .mod{flex-wrap:wrap;gap:8px 12px;padding:12px 14px}
+  .mod .nm{width:auto;flex:1 1 100%;font-size:14px}
+  .mod .track{flex:1 1 100%}
+  .mod .pc{width:auto;flex:1 1 100%;text-align:left;order:3}
+  .grp .gb{grid-template-columns:repeat(2,1fr);gap:10px}
+  .today li{font-size:14px}
+  .moti .big{font-size:clamp(18px,5.5vw,26px)}
+}
+/* 小手机：课程单列，分组头换行，输入框与表单占满整行 */
+@media (max-width:560px){
+  #view{padding:14px 12px}
+  .card{padding:14px}
+  .grp .gb{grid-template-columns:1fr}
+  .grp .gh{padding:12px 14px;gap:6px 10px}
+  .grp .gh .gn{flex:1 1 100%}
+  .grp .gh .meta{order:2;flex:0 0 auto}
+  .grp .gh .hug{order:3;margin-left:auto}
+  .course{padding:14px}
+  .course .cn{font-size:14.5px;white-space:normal;line-height:1.4}
+  .course .cm{font-size:12px}
+  .course .c-num{width:20px;height:20px;font-size:10px}
+  .course .cb{width:28px;height:28px;flex-basis:28px}
+  .course .cb svg{width:16px;height:16px}
   .stats{grid-template-columns:repeat(2,1fr)}
-  .mod .nm{width:110px;flex-basis:110px}
-  .nav{flex-direction:row;flex-wrap:wrap;justify-content:center}
-  .nav button{flex:1;min-width:64px}
+  .inp,.modal-inp,.setrow input,.setrow select,.addcustom input{min-width:0;width:100%}
+  .setrow{flex-direction:column;align-items:stretch}
+  .plan-head .btn,.toolbar .btn,.create-bar .btn-sm,.toolbar button{flex:1 1 auto}
+  .cal{gap:4px}
+  .cal .day{font-size:12px;border-radius:9px}
+  .cal .wd{font-size:10px}
+  .ach{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+}
+/* 极窄屏：统计卡也单列，进一步收紧留白 */
+@media (max-width:380px){
+  #view{padding:12px 10px}
+  .grp .gb,.stats{grid-template-columns:1fr}
+  .stat .v{font-size:22px}
+  .topbar{padding:10px 12px}
+}
+/* 桌面端细节增强 */
+@media (min-width:769px){
+  .sidebar{overflow-y:auto}
+  #view{max-width:1080px}
 }
 /* ---------- 行内编辑 / 弹窗 ---------- */
 .inline-edit{width:100%;padding:6px 8px;border-radius:8px;background:rgba(0,0,0,.45);border:1px solid var(--cyan);color:var(--txt);font-size:14px;outline:none;font-family:inherit}
