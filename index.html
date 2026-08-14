@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="cache-buster" content="1786729400">
+<meta name="cache-buster" content="1786731200">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0a14" />
@@ -231,7 +231,7 @@ a{color:var(--cyan)}
 
 <script>
 /* ============ 课程数据（由构建脚本注入） ============ */
-const COURSES = [
+const DEFAULT_COURSES = [
 {
 "name": "安康智慧健康管理平台",
 "color": "#7B9E87",
@@ -4209,7 +4209,7 @@ const COURSES = [
 ];
 
 /* ============ 存储 Key ============ */
-const K = { ck:'llm-v52', plan:'llm-plan-v52', ai:'llm-ai-cfg-v2', ov:'ov-v52' };
+const K = { ck:'llm-v52', plan:'llm-plan-v52', ai:'llm-ai-cfg-v2', ov:'ov-v52', struct:'llm-struct-v53' };
 
 /* ============ 工具 ============ */
 const $ = s=>document.querySelector(s);
@@ -4239,6 +4239,8 @@ function persistCK(){save(K.ck,ck);}
 function persistPlan(){save(K.plan,pl);}
 function persistAI(){save(K.ai,aicfg);}
 function persistOV(){save(K.ov,ov);}
+function persistStruct(){save(K.struct,COURSES);}
+let COURSES = load(K.struct, DEFAULT_COURSES);
 
 /* 首次访问注入示例计划（含 1 条逾期）*/
 (function seed(){
@@ -4389,7 +4391,7 @@ function renderHome(){
     statCard('c4','剩余时长',fmtMin(st.totalMin-st.doneMin),'<path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 3v9"/>')+
     '</div>';
 
-  let mods='<div class="card" style="margin-top:18px"><div class="h2"><span class="dot"></span>各模块进度</div><div class="mods">';
+  let mods='<div class="card" style="margin-top:18px"><div class="h2"><span class="dot"></span>各模型进度</div><div class="mods">';
   COURSES.forEach((m,mi)=>{
     let tot=0,dn=0;for(let gi=0;gi<m.groups.length;gi++){for(const c of effCourses(mi,gi)){tot++;if(isDone(c.id))dn++;}}
     const pc=tot?Math.round(dn/tot*100):0;
@@ -4473,7 +4475,7 @@ function achievements(st){
   ];
   // 模块通关
   let modDone=0;COURSES.forEach((m,mi)=>{let tot=0,dn=0;for(let gi=0;gi<m.groups.length;gi++)for(const c of effCourses(mi,gi)){tot++;if(isDone(c.id))dn++;}if(tot&&dn===tot)modDone++;});
-  A.push({name:'模块通关',desc:'完整学完一个模块',un:modDone>=1});
+  A.push({name:'模型通关',desc:'完整学完一个模型',un:modDone>=1});
   return A;
 }
 function shiftMonth(d){let [y,mo]=selDate.split('-').map(Number);mo+=d;if(mo<1){mo=12;y--;}if(mo>12){mo=1;y++;}selDate=y+'-'+String(mo).padStart(2,'0')+'-01';render();}
@@ -4492,7 +4494,7 @@ function renderLearn(){
     if(active&&editMode)btn+='<button class="mod-rename" onclick="renameMod('+mi+')">✎ 编辑</button>';
     return btn;
   }).join('');
-  if(editMode)tabs+='<button class="mod-rename" onclick="addModule()" style="border-style:dashed">＋ 新模块</button>';
+  if(editMode)tabs+='<button class="mod-rename" onclick="addModule()" style="border-style:dashed">＋ 新模型</button>';
   tabs+='</div>';
 
   const toolbar='<div class="toolbar"><input class="inp" placeholder="搜索课程名…" value="'+esc(learnSearch)+'" oninput="learnSearch=this.value;refreshLearnBody()" id="searchInp"/>'+
@@ -4617,19 +4619,23 @@ function confOk(){closeModal();const cb=_confCb;_confCb=null;if(cb)cb();}
 
 /* ---- 三级创建 ---- */
 function addModule(){
-  askText('输入新大模块名称：','',v=>{
-    if(!v)return;
+  askText('输入新模型名称：','',v=>{
+    v=(v||'').trim();
+    if(!v){toast('名称不能为空');return;}
+    if(v.length>30){toast('名称不超过30字');return;}
     const hues=[180,270,320,145,35,200,50];
     const h=hues[COURSES.length%hues.length];
     COURSES.push({name:v,color:'hsl('+h+',65%,60%)',bg:'hsla('+h+',65%,60%,.1)',groups:[]});
-    toast('已添加模块「'+v+'」');curMod=COURSES.length-1;persistOV();render();
+    toast('已添加模型「'+v+'」');curMod=COURSES.length-1;persistStruct();persistOV();render();
   });
 }
 function addGroup(){
   askText('为「'+modName(curMod)+'」添加新分组名称：','',v=>{
-    if(!v)return;
+    v=(v||'').trim();
+    if(!v){toast('名称不能为空');return;}
+    if(v.length>30){toast('名称不超过30字');return;}
     COURSES[curMod].groups.push({name:v,courses:[]});
-    toast('已添加分组「'+v+'」');persistOV();render();
+    toast('已添加分组「'+v+'」');persistStruct();persistOV();render();
   });
 }
 function quickAddCourse(){
@@ -4645,12 +4651,14 @@ function quickAddCourse(){
 function qcSubmit(){
   const gi=parseInt(document.getElementById('qcGrp').value);
   const n=document.getElementById('qcName').value.trim();
-  const mm=parseInt(document.getElementById('qcMin').value)||10;
+  const mm=Math.min(600,Math.max(1,parseInt(document.getElementById('qcMin').value)||10));
   closeModal();
   if(!n){toast('请输入课程名');return;}
   addCustomWithName(gi,n,Math.max(1,mm));
 }
 function addCustomWithName(gi,name,key,mins){
+  mins=Math.min(600,Math.max(1,parseInt(mins)||10));
+  if(name&&name.length>60){toast('课程名不超过60字');return;}
   let id=key?('k_'+key):('c_'+Date.now()+'_'+Math.floor(Math.random()*999));
   const k=gkey(curMod,gi);
   if(!ov.custom[k])ov.custom[k]=[];
@@ -4691,7 +4699,7 @@ function comfort(gi){const gname=grpName(curMod,gi);const mname=modName(curMod);
   const box=document.createElement('div');box.className='card moti';box.style.marginTop='14px';
   box.innerHTML='<div class="h2"><span class="dot"></span>🤗 '+esc(gname)+' · 来自小助手的安慰</div><div class="big" id="cf'+gi+'">正在为你准备温暖的话…</div>';
   $('#learnBody').prepend(box);
-  callAI('你是陪伴学习大模型技术的暖心伙伴，用 2-3 句中文温柔安慰正在某个难点上受挫的学习者，具体提到他学的模块和分组，不要使用标点结尾也不要使用 emoji',
+  callAI('你是陪伴学习大模型技术的暖心伙伴，用 2-3 句中文温柔安慰正在某个难点上受挫的学习者，具体提到他学的模型和分组，不要使用标点结尾也不要使用 emoji',
     '我正在学「'+mname+'」的「'+gname+'」部分，感觉有点难有点累，安慰我一下')
     .then(t=>{const el=document.getElementById('cf'+gi);if(el)el.textContent=t||rnd(QUOTES_COMF);});
 }
@@ -4741,8 +4749,8 @@ function clearSamples(){
   lsDel('llm-seedkeys-v2');lsDel('llm-seeded-v2');persistPlan();toast('示例计划已清空');render();
 }
 function resetAll(){askConfirm('确定清空全部打卡、计划、配置与自定义数据？此操作不可恢复！',()=>{
-  ['llm-v52','llm-plan-v52','llm-ai-cfg-v2','ov-v52','llm-seeded-v2'].forEach(k=>lsDel(k));
-  ck={done:{},at:{}};pl={};aicfg={url:'',key:'',model:'gpt-4o-mini'};ov={grpRename:{},grpHidden:{},courseRename:{},courseDur:{},custom:{}};toast('已全部重置');render();
+  ['llm-v52','llm-plan-v52','llm-ai-cfg-v2','ov-v52','llm-seeded-v2',K.struct].forEach(k=>lsDel(k));
+  ck={done:{},at:{}};pl={};aicfg={url:'',key:'',model:'gpt-4o-mini'};ov={grpRename:{},grpHidden:{},courseRename:{},courseDur:{},custom:{}};COURSES=JSON.parse(JSON.stringify(DEFAULT_COURSES));toast('已全部重置');render();
 });}
 
 /* ============ 事件绑定 ============ */
