@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="cache-buster" content="1786759245">
+<meta name="cache-buster" content="1786759746">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0a14" />
@@ -167,6 +167,9 @@ a{color:var(--cyan)}
 .edit .course .ced{display:flex}
 .addcustom{display:none;grid-column:1/-1;gap:8px;padding:12px 14px;background:rgba(0,0,0,.25);border-radius:12px}
 .edit .addcustom{display:flex;flex-wrap:wrap}
+.hidden-banner{grid-column:1/-1;padding:10px 16px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.35);
+  border-radius:12px;color:#fbbf24;font-size:13px;cursor:pointer;text-align:center;transition:.2s;margin-bottom:8px}
+.hidden-banner:hover{background:rgba(251,191,36,.2);border-color:rgba(251,191,36,.5)}
 .addcustom input{flex:1;min-width:120px;padding:8px 10px;border-radius:9px;background:rgba(0,0,0,.35);border:1px solid var(--line);color:var(--txt);font-size:13px}
 .create-bar{display:none;gap:8px;align-items:center;padding:12px 16px;margin-bottom:14px;
   background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(217,70,239,.06));
@@ -4885,7 +4888,16 @@ function renderLearn(){
     '<button class="btn-sm" onclick="quickAddCourse()">＋ 快速添加课程</button>'+
     '</div>';
 
-  return tabs+toolbar+(editMode?cbar:'')+'<div id="learnBody">'+learnBodyHTML()+'</div>';
+  /* 检测当前模型是否有被隐藏的分组 */
+  let hiddenGroups=[];
+  const _cm=COURSES[curMod];
+  if(_cm)for(let gi=0;gi<_cm.groups.length;gi++){if(grpHidden(curMod,gi))hiddenGroups.push({i:gi,n:grpName(curMod,gi)});}
+  const hiddenBanner=hiddenGroups.length&&!editMode?
+    '<div class="hidden-banner" onclick="unhideAllGroups()">'+
+    '⚠️ 本模型有 <b>'+hiddenGroups.length+'</b> 个分组被隐藏（'+hiddenGroups.map(h=>esc(h.n)).join('、')+'），点击此处显示全部 →'+
+    '</div>':'';
+
+  return tabs+toolbar+hiddenBanner+(editMode?cbar:'')+'<div id="learnBody">'+learnBodyHTML()+'</div>';
 }
 function modName(mi){return ov.modRename[mi]||COURSES[mi].name;}
 function learnBodyHTML(){
@@ -4954,6 +4966,12 @@ function inlineEdit(el,val,onSave){
 function renameMod(mi){const el=document.querySelector('.tabs button.on');inlineEdit(el,modName(mi),v=>{ov.modRename[mi]=v;persistOV();render();});}
 function renameGrp(gi){const grp=document.querySelector('.grp[data-gi="'+gi+'"]');const el=grp?grp.querySelector('.gn'):null;inlineEdit(el,grpName(curMod,gi),v=>{ov.grpRename[gkey(curMod,gi)]=v;persistOV();render();});}
 function toggleHide(gi){const k=gkey(curMod,gi);if(grpHidden(curMod,gi))delete ov.grpHidden[k];else ov.grpHidden[k]=true;persistOV();render();}
+function unhideAllGroups(){
+  const cm=COURSES[curMod];if(!cm)return;
+  let count=0;
+  for(let gi=0;gi<cm.groups.length;gi++){const k=gkey(curMod,gi);if(ov.grpHidden[k]){delete ov.grpHidden[k];count++;}}
+  if(count){persistOV();toast('已显示 '+count+' 个隐藏分组');render();}
+}
 function editCourse(cid){
   const loc=findCourseLoc(cid);const c=loc.c;
   const key=courseKey(c,loc.mi,loc.gi);
