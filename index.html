@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="cache-buster" content="1786759746">
+<meta name="cache-buster" content="1786848000">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0a14" />
@@ -585,7 +585,7 @@ const DEFAULT_COURSES = [
     ]
   },
   {
-    "name": "百战智能运营平台",
+    "name": "智能运营平台",
     "color": "#D4A88E",
     "bg": "#D4A88E1a",
     "groups": [
@@ -4904,7 +4904,7 @@ function learnBodyHTML(){
   let body='';
   const m=COURSES[curMod];
   for(let gi=0;gi<m.groups.length;gi++){
-    if(grpHidden(curMod,gi)&&!editMode)continue;
+    if(grpHidden(curMod,gi)&&!editMode&&learnFilter!=='done')continue;
     const gc=m.color;
     const cs=effCourses(curMod,gi);
     let tot=0,dn=0,tmin=0;cs.forEach(c=>{tot++;tmin+=c.m;if(isDone(c.id))dn++;});
