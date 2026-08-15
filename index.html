@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="cache-buster" content="1786848100">
+<meta name="cache-buster" content="1786848600">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0a14" />
@@ -4910,10 +4910,17 @@ function renderLearn(){
 }
 function modName(mi){return ov.modRename[mi]||COURSES[mi].name;}
 function learnBodyHTML(){
-  let body='';
   const m=COURSES[curMod];
+
+  /* ---- 筛选模式（done/undone）：统一收集路径，确保与 toolbar 计数一致 ---- */
+  if(learnFilter==='done'||learnFilter==='undone'){
+    return learnFilteredBody(m,learnFilter==='done');
+  }
+
+  /* ---- 全部模式 / 有搜索：原有分组渲染逻辑 ---- */
+  let body='';
   for(let gi=0;gi<m.groups.length;gi++){
-    if(grpHidden(curMod,gi)&&!editMode&&learnFilter!=='done')continue;
+    if(grpHidden(curMod,gi)&&!editMode)continue;
     const gc=m.color;
     const cs=effCourses(curMod,gi);
     let tot=0,dn=0,tmin=0;cs.forEach(c=>{tot++;tmin+=c.m;if(isDone(c.id))dn++;});
@@ -4932,18 +4939,9 @@ function learnBodyHTML(){
       const done=isDone(c.id);
       const match=!learnSearch||courseName(c).toLowerCase().includes(learnSearch.toLowerCase());
       if(!match)return;
-      if(learnFilter==='done'&&!done)return;
       if(learnFilter==='undone'&&done)return;
       ci++;
-      gb+='<div class="course'+(done?' done':'')+'" data-cid="'+c.id+'" onclick="toggleCourse('+c.id+')">'+
-        '<span class="c-num">'+ci+'</span>'+
-        '<div class="c-body">'+
-        '<div class="cn">'+esc(courseName(c))+'</div>'+
-        '<div class="cm">'+fmtMin(courseMin(c))+'</div>'+
-        '</div>'+
-        '<div class="cb" onclick="event.stopPropagation();toggleCourse('+c.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>'+
-        (editMode?'<div class="ced" onclick="event.stopPropagation()"><button class="btn sm" onclick="editCourse('+c.id+')">✎ 编辑</button><button class="btn sm danger" onclick="delCourse('+c.id+')">删</button></div>':'')+
-        '</div>';
+      gb+=renderCourseCard(c,ci,done);
     });
     if(editMode){
       gb+='<div class="addcustom"><input placeholder="新课程名" id="cn'+gi+'"/><input placeholder="课程键(可选)" id="ck'+gi+'" style="max-width:120px"/><input placeholder="分钟" type="number" min="1" id="cm'+gi+'" style="max-width:90px"/><button class="btn sm primary" onclick="addCustom('+gi+')">添加</button></div>';
@@ -4954,15 +4952,69 @@ function learnBodyHTML(){
   if(!body){
     if(learnSearch){
       body='<div class="empty-state"><div class="es-icon">🔍</div><div class="es-title">没有找到匹配结果</div><div class="es-desc">没有找到匹配「<b style="color:var(--txt)">'+esc(learnSearch)+'</b>」的课程，试试其他关键词</div></div>';
-    }else if(learnFilter==='done'){
-      body='<div class="empty-state"><div class="es-icon">📋</div><div class="es-title">暂无已学内容</div><div class="es-desc">还没有打卡记录，点击课程卡片即可标记为已学</div><button class="es-action" onclick="learnFilter=\'undone\';refreshLearnBody()">查看未学课程</button></div>';
-    }else if(learnFilter==='undone'){
-      body='<div class="empty-state"><div class="es-icon">🎉</div><div class="es-title">全部学完了！</div><div class="es-desc">太棒了，该模型所有课程都已完成，继续保持！</div><button class="es-action" onclick="learnFilter=\'all\';refreshLearnBody()">查看全部课程</button></div>';
     }else{
       body='<div class="empty-state"><div class="es-icon">📂</div><div class="es-title">暂无课程</div><div class="es-desc">当前模型下没有课程内容</div></div>';
     }
   }
   return body;
+}
+
+/* ---- 统一筛选渲染：跨所有分组（含隐藏）收集匹配课程，确保与 toolbar 计数完全一致 ---- */
+function learnFilteredBody(m,wantDone){
+  /* 第一遍：收集所有匹配课程，按分组聚集 — 与 renderLearn 中 doneC/undoneC 用相同的遍历逻辑 */
+  const buckets={}; // gi -> [{c, gi}]
+  let totalMatched=0;
+  for(let gi=0;gi<m.groups.length;gi++){
+    const cs=effCourses(curMod,gi);
+    for(const c of cs){
+      if(isDone(c.id)!==wantDone)continue;
+      const match=!learnSearch||courseName(c).toLowerCase().includes(learnSearch.toLowerCase());
+      if(!match)continue;
+      if(!buckets[gi])buckets[gi]=[];
+      buckets[gi].push(c);
+      totalMatched++;
+    }
+  }
+  if(!totalMatched){
+    if(wantDone){
+      return '<div class="empty-state"><div class="es-icon">📋</div><div class="es-title">暂无已学内容</div><div class="es-desc">还没有打卡记录，点击课程卡片即可标记为已学</div><button class="es-action" onclick="learnFilter=\'undone\';refreshLearnBody()">查看未学课程</button></div>';
+    }else{
+      return '<div class="empty-state"><div class="es-icon">🎉</div><div class="es-title">全部学完了！</div><div class="es-desc">太棒了，该模型所有课程都已完成，继续保持！</div><button class="es-action" onclick="learnFilter=\'all\';refreshLearnBody()">查看全部课程</button></div>';
+    }
+  }
+  /* 渲染：按分组顺序输出 */
+  let body='';
+  const gis=Object.keys(buckets).map(Number).sort((a,b)=>a-b);
+  for(const gi of gis){
+    const items=buckets[gi];
+    const gc=m.color;
+    const gname=grpName(curMod,gi);
+    const hidden=grpHidden(curMod,gi);
+    let gh='<div class="gh" style="--gc:'+gc+'">'+
+      '<span class="gn"><span style="color:'+gc+'">●</span> '+esc(gname)+(hidden?' （来自隐藏分组）':'')+'</span>'+
+      '<span class="meta">'+items.length+' 门'+(wantDone?'已学':'未学')+'</span>'+
+      '</div>';
+    let gb='<div class="gb">';
+    items.forEach((c,ii)=>{
+      gb+=renderCourseCard(c,ii+1,wantDone);
+    });
+    gb+='</div>';
+    body+='<div class="grp'+(hidden?' hidden-grp':'')+'" data-gi="'+gi+'">'+gh+gb+'</div>';
+  }
+  return body;
+}
+
+/* ---- 单张课程卡片渲染（抽取为公共函数，避免 all/filtered 双路径重复） ---- */
+function renderCourseCard(c,ci,done){
+  return '<div class="course'+(done?' done':'')+'" data-cid="'+c.id+'" onclick="toggleCourse('+c.id+')">'+
+    '<span class="c-num">'+ci+'</span>'+
+    '<div class="c-body">'+
+    '<div class="cn">'+esc(courseName(c))+'</div>'+
+    '<div class="cm">'+fmtMin(courseMin(c))+'</div>'+
+    '</div>'+
+    '<div class="cb" onclick="event.stopPropagation();toggleCourse('+c.id+')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>'+
+    (editMode?'<div class="ced" onclick="event.stopPropagation()"><button class="btn sm" onclick="editCourse('+c.id+')">✎ 编辑</button><button class="btn sm danger" onclick="delCourse('+c.id+')">删</button></div>':'')+
+    '</div>';
 }
 function refreshLearnBody(){const lb=document.getElementById('learnBody');if(lb)lb.innerHTML=learnBodyHTML();}
 function switchMod(mi){curMod=mi;render();}
