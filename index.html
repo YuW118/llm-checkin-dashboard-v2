@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="cache-buster" content="1786848000">
+<meta name="cache-buster" content="1786848100">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0a14" />
@@ -170,6 +170,15 @@ a{color:var(--cyan)}
 .hidden-banner{grid-column:1/-1;padding:10px 16px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.35);
   border-radius:12px;color:#fbbf24;font-size:13px;cursor:pointer;text-align:center;transition:.2s;margin-bottom:8px}
 .hidden-banner:hover{background:rgba(251,191,36,.2);border-color:rgba(251,191,36,.5)}
+/* empty state for filter tabs */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;gap:12px}
+.empty-state .es-icon{font-size:48px;line-height:1;opacity:.6}
+.empty-state .es-title{font-size:16px;font-weight:700;color:var(--txt)}
+.empty-state .es-desc{font-size:13px;color:var(--mut);max-width:320px;line-height:1.5}
+.empty-state .es-action{margin-top:4px;padding:8px 20px;border-radius:10px;font-size:13px;font-weight:600;
+  background:linear-gradient(135deg,var(--cyan),var(--grn));color:#06121a;cursor:pointer;border:none;transition:.15s}
+.empty-state .es-action:hover{transform:scale(1.04);box-shadow:0 4px 18px rgba(34,211,238,.3)}
+.empty-state .es-action:active{transform:scale(.97)}
 .addcustom input{flex:1;min-width:120px;padding:8px 10px;border-radius:9px;background:rgba(0,0,0,.35);border:1px solid var(--line);color:var(--txt);font-size:13px}
 .create-bar{display:none;gap:8px;align-items:center;padding:12px 16px;margin-bottom:14px;
   background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(217,70,239,.06));
@@ -4942,7 +4951,17 @@ function learnBodyHTML(){
     gb+='</div>';
     if(gb.includes('class="course"')||editMode)body+='<div class="grp'+(grpHidden(curMod,gi)?' hidden-grp':'')+'" data-gi="'+gi+'">'+gh+gb+'</div>';
   }
-  if(!body&&learnSearch)body='<div style="text-align:center;padding:40px 0;color:var(--mut);font-size:14px">没有找到匹配「<b style="color:var(--txt)">'+esc(learnSearch)+'</b>」的课程</div>';
+  if(!body){
+    if(learnSearch){
+      body='<div class="empty-state"><div class="es-icon">🔍</div><div class="es-title">没有找到匹配结果</div><div class="es-desc">没有找到匹配「<b style="color:var(--txt)">'+esc(learnSearch)+'</b>」的课程，试试其他关键词</div></div>';
+    }else if(learnFilter==='done'){
+      body='<div class="empty-state"><div class="es-icon">📋</div><div class="es-title">暂无已学内容</div><div class="es-desc">还没有打卡记录，点击课程卡片即可标记为已学</div><button class="es-action" onclick="learnFilter=\'undone\';refreshLearnBody()">查看未学课程</button></div>';
+    }else if(learnFilter==='undone'){
+      body='<div class="empty-state"><div class="es-icon">🎉</div><div class="es-title">全部学完了！</div><div class="es-desc">太棒了，该模型所有课程都已完成，继续保持！</div><button class="es-action" onclick="learnFilter=\'all\';refreshLearnBody()">查看全部课程</button></div>';
+    }else{
+      body='<div class="empty-state"><div class="es-icon">📂</div><div class="es-title">暂无课程</div><div class="es-desc">当前模型下没有课程内容</div></div>';
+    }
+  }
   return body;
 }
 function refreshLearnBody(){const lb=document.getElementById('learnBody');if(lb)lb.innerHTML=learnBodyHTML();}
