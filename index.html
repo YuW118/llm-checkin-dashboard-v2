@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="cache-buster" content="1787155800">
+<meta name="cache-buster" content="1787037298">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0a14" />
@@ -180,43 +180,6 @@ a{color:var(--cyan)}
 .empty-state .es-action:hover{transform:scale(1.04);box-shadow:0 4px 18px rgba(34,211,238,.3)}
 .empty-state .es-action:active{transform:scale(.97)}
 /* ── 全年活跃热力图 (GitHub 风格，暗色适配) ── */
-.heatmap-card{margin-top:18px;border:1px solid rgba(52,211,153,.2);background:linear-gradient(135deg,rgba(52,211,153,.05),rgba(34,211,238,.03))}
-.hm-header{display:flex;align-items:center;gap:16px;padding:16px 20px 0;flex-wrap:wrap}
-.hm-title{font-size:15px;font-weight:700;color:var(--txt);display:flex;align-items:center;gap:8px}
-.hm-stats{display:flex;gap:14px;font-size:12px;color:var(--mut)}
-.hm-stat-val{font-weight:800;color:var(--grn);font-size:15px}
-.hm-close{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:none;
-  color:var(--mut);font-size:14px;display:grid;place-items:center;cursor:pointer;margin-left:auto;flex-shrink:0}
-.hm-close:hover{border-color:var(--red);color:var(--red)}
-.hm-body{padding:16px 20px 18px;overflow-x:auto}
-.hm-grid{display:flex;flex-direction:column;gap:3px;min-width:680px}
-.hm-month-row{display:flex;gap:3px}
-.hm-month-label{width:36px;height:22px;font-size:11px;color:var(--mut);display:flex;align-items:center;flex-shrink:0;font-weight:600}
-.hm-weeks{display:flex;gap:3px;flex:1}
-.hm-cell{width:11px;height:11px;border-radius:2px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
-  flex-shrink:0;transition:background .15s,border-color .15s,transform .12s;cursor:pointer;position:relative}
-.hm-cell:hover{transform:scale(1.4);z-index:2;border-color:rgba(255,255,255,.2)}
-/* 5 级绿色：0=空, 1=最浅, 2=浅, 3=中, 4=最深 */
-.hm-l0{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.06)}
-.hm-l1{background:rgba(52,211,153,.18);border-color:rgba(52,211,153,.25)}
-.hm-l2{background:rgba(52,211,153,.38);border-color:rgba(52,211,153,.40)}
-.hm-l3{background:rgba(52,211,153,.60);border-color:rgba(52,211,153,.55)}
-.hm-l4{background:rgba(52,211,153,.88);border-color:rgba(52,211,153,.7);box-shadow:0 0 6px rgba(52,211,153,.35)}
-.hm-footer{display:flex;align-items:center;justify-content:center;gap:10px;padding:0 20px 14px;font-size:11px;color:var(--mut)}
-.hm-legend{display:flex;align-items:center;gap:5px}
-.hm-legend span{font-size:11px;color:var(--mut)}
-.hm-leg-cell{width:11px;height:11px;border-radius:2px;display:inline-block}
-.hm-tip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
-  background:rgba(10,10,24,.95);border:1px solid var(--line);color:var(--txt);font-size:11.5px;
-  padding:5px 10px;border-radius:8px;white-space:nowrap;z-index:10;pointer-events:none;opacity:0;transition:opacity .15s}
-.hm-cell:hover .hm-tip{opacity:1}
-@media(max-width:768px){
-  .hm-body{padding:12px 14px 14px}
-  .hm-header{padding:12px 14px 0;gap:10px}
-  .hm-stat-val{font-size:13px}
-  .hm-cell{width:9px;height:9px}
-  .hm-leg-cell{width:9px;height:9px}
-}
 .addcustom input{flex:1;min-width:120px;padding:8px 10px;border-radius:9px;background:rgba(0,0,0,.35);border:1px solid var(--line);color:var(--txt);font-size:13px}
 .create-bar{display:none;gap:8px;align-items:center;padding:12px 16px;margin-bottom:14px;
   background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(217,70,239,.06));
@@ -1649,662 +1612,991 @@ const DEFAULT_COURSES = [
       }
     ]
   },
-  {
-    "name": "AI Agent与工作流编排",
-    "color": "#C9A0A0",
-    "bg": "#C9A0A01a",
+    {
+    "name": "AI Agent智能体与多模态应用",
+    "color": "#C97A7A",
+    "bg": "#C97A7A1a",
+    "desc": "本阶段系统讲解 AI Agent（智能体）的核心原理与企业级开发实践，深入学习 Agent 架构设计、Tool Calling、记忆系统、工作流编排、多智能体协作等关键技术。课程以 LangChain、LangGraph、MCP、Coze 等主流框架和平台为核心，通过大量实战案例帮助学员掌握企业级智能体系统的开发流程。",
     "groups": [
-      {
-        "name": "Tool Calling与JSON Schema",
-        "courses": [
-          {
-            "id": 237,
-            "name": "ToolCalling概念与API设计",
-            "m": 10
-          },
-          {
-            "id": 238,
-            "name": "ToolCalling初步体验",
-            "m": 13
-          },
-          {
-            "id": 239,
-            "name": "JSONSchema的设计基础",
-            "m": 8
-          },
-          {
-            "id": 240,
-            "name": "JSONSchema的自动生成",
-            "m": 16
-          },
-          {
-            "id": 241,
-            "name": "Schema高级写法",
-            "m": 8
-          },
-          {
-            "id": 242,
-            "name": "生成Schema与ToolCall结合",
-            "m": 0
-          },
-          {
-            "id": 243,
-            "name": "Schema参数验证策略",
-            "m": 13
-          },
-          {
-            "id": 244,
-            "name": "Schema参数验证策略实践",
-            "m": 7
-          }
-        ]
-      },
       {
         "name": "Agent理论基础",
         "courses": [
           {
-            "id": 245,
+            "id": 800,
             "name": "Agent概念与应用场景",
             "m": 16
           },
           {
-            "id": 246,
+            "id": 801,
             "name": "Agent企业级架构概览",
             "m": 9
           },
           {
-            "id": 247,
+            "id": 802,
             "name": "Agent架构设计_决策机制",
             "m": 10
           },
           {
-            "id": 248,
+            "id": 803,
             "name": "Agent架构设计_ReAct实现策略",
             "m": 9
           },
           {
-            "id": 249,
-            "name": "ReAct实现策略(续)",
+            "id": 804,
+            "name": "Agent架构设计_ReAct实现策略",
             "m": 21
           },
           {
-            "id": 250,
-            "name": "设计范式演进_传统AI",
+            "id": 805,
+            "name": "Agent架构设计_设计范式演进_传统AI时代",
             "m": 10
           },
           {
-            "id": 251,
-            "name": "设计范式演进_LLM时代",
+            "id": 806,
+            "name": "Agent架构设计_设计范式演进_LLM时代",
             "m": 7
           },
           {
-            "id": 252,
+            "id": 807,
             "name": "Agent架构设计_底层技术",
             "m": 11
           },
           {
-            "id": 253,
+            "id": 808,
             "name": "Agent记忆系统",
             "m": 11
           },
           {
-            "id": 254,
-            "name": "Agent工具调用思想与接口设计",
+            "id": 809,
+            "name": "Agent工具调用思想与接口设计原则",
             "m": 16
           },
           {
-            "id": 255,
+            "id": 810,
             "name": "Agent评估体系",
             "m": 13
           },
           {
-            "id": 256,
+            "id": 811,
             "name": "Agent开发流程",
             "m": 6
+          },
+          {
+            "id": 812,
+            "name": "【实操】本章资料下载地址",
+            "m": 0
           }
         ]
       },
       {
-        "name": "LangChain核心",
+        "name": "Agent工具系统",
         "courses": [
           {
-            "id": 257,
-            "name": "LangChain介绍",
+            "id": 813,
+            "name": "ToolCalling概念与API设计",
+            "m": 10
+          },
+          {
+            "id": 814,
+            "name": "ToolCalling初步体验",
+            "m": 13
+          },
+          {
+            "id": 815,
+            "name": "JSONSchema的设计基础",
+            "m": 8
+          },
+          {
+            "id": 816,
+            "name": "JSONSchema的自动生成",
+            "m": 16
+          },
+          {
+            "id": 817,
+            "name": "Schema高级写法",
+            "m": 8
+          },
+          {
+            "id": 818,
+            "name": "生成Schema与ToolCall结合",
+            "m": 0
+          },
+          {
+            "id": 819,
+            "name": "Schema参数验证策略",
+            "m": 13
+          },
+          {
+            "id": 820,
+            "name": "Schema参数验证策略实践",
+            "m": 7
+          },
+          {
+            "id": 821,
+            "name": "【实操】本章资料下载地址",
+            "m": 0
+          }
+        ]
+      },
+      {
+        "name": "Agent框架",
+        "courses": [
+          {
+            "id": 822,
+            "name": "LangChain的介绍",
             "m": 11
           },
           {
-            "id": 258,
+            "id": 823,
             "name": "LangChain环境搭建",
             "m": 11
           },
           {
-            "id": 259,
+            "id": 824,
             "name": "LangChain_通义模型",
             "m": 8
           },
           {
-            "id": 260,
+            "id": 825,
             "name": "LangChain_智谱模型",
             "m": 11
           },
           {
-            "id": 261,
+            "id": 826,
             "name": "LangChain_本地模型",
             "m": 14
           },
           {
-            "id": 262,
+            "id": 827,
             "name": "LLM模型特点与选择",
             "m": 18
           },
           {
-            "id": 263,
+            "id": 828,
             "name": "LLM模型的调用方式",
             "m": 13
           },
           {
-            "id": 264,
-            "name": "提示词_模板介绍",
+            "id": 829,
+            "name": "LangChain提示词_模板介绍",
             "m": 11
           },
           {
-            "id": 265,
-            "name": "PromptTemplate(1)",
+            "id": 830,
+            "name": "LangChain提示模板_PromptTemlate使用1",
             "m": 12
           },
           {
-            "id": 266,
-            "name": "PromptTemplate(2)",
+            "id": 831,
+            "name": "LangChain提示模板_PromptTemlate使用2",
             "m": 14
           },
           {
-            "id": 267,
-            "name": "ChatPromptTemplate",
+            "id": 832,
+            "name": "LangChain提示模板_ChatPromptTemlate使用",
             "m": 16
           },
           {
-            "id": 268,
-            "name": "FewShotPromptTemplate",
+            "id": 833,
+            "name": "LangChain提示模板_FewShotPromptTemplate使用",
             "m": 17
           },
           {
-            "id": 269,
+            "id": 834,
             "name": "企业智能体_提示词管理策略",
             "m": 11
           },
           {
-            "id": 270,
+            "id": 835,
             "name": "提示词管理策略_json方式",
             "m": 20
           },
           {
-            "id": 271,
+            "id": 836,
             "name": "提示词管理策略_yaml方式",
             "m": 17
           },
           {
-            "id": 272,
-            "name": "格式化输出_介绍",
+            "id": 837,
+            "name": "LangChain格式化输出_介绍",
             "m": 15
           },
           {
-            "id": 273,
-            "name": "格式化输出_JSON",
+            "id": 838,
+            "name": "LangChain格式化输出_JSON",
             "m": 11
           },
           {
-            "id": 274,
-            "name": "格式化输出_Pydantic",
+            "id": 839,
+            "name": "LangChain格式化输出_Pydantic",
             "m": 10
           },
           {
-            "id": 275,
-            "name": "格式化输出_XML",
+            "id": 840,
+            "name": "LangChain格式化输出_XML",
             "m": 8
           },
           {
-            "id": 276,
-            "name": "格式化输出_List",
+            "id": 841,
+            "name": "LangChain格式化输出_List",
             "m": 7
           },
           {
-            "id": 277,
-            "name": "格式化输出_自定义格式",
+            "id": 842,
+            "name": "LangChain格式化输出_自定义格式",
             "m": 14
           },
           {
-            "id": 278,
-            "name": "格式化输出_声明式模型",
+            "id": 843,
+            "name": "LangChain格式化输出_声明式模型",
             "m": 13
           },
           {
-            "id": 279,
+            "id": 844,
             "name": "LangChain链_链式调用",
             "m": 11
           },
           {
-            "id": 280,
+            "id": 845,
             "name": "LangChain链_LLMChain",
             "m": 7
           },
           {
-            "id": 281,
-            "name": "SimpleSequentialChain",
+            "id": 846,
+            "name": "LangChain链_SimpleSequentialChain",
             "m": 10
           },
           {
-            "id": 282,
-            "name": "SequentialChain",
+            "id": 847,
+            "name": "LangChain链_SequentialChain",
             "m": 8
           },
           {
-            "id": 283,
-            "name": "LCEL的使用",
+            "id": 848,
+            "name": "LangChain链_LCEL的使用",
             "m": 12
           },
           {
-            "id": 284,
-            "name": "Runnable",
+            "id": 849,
+            "name": "LangChain链_Runnable",
             "m": 5
           },
           {
-            "id": 285,
-            "name": "RunnablePassthrough",
+            "id": 850,
+            "name": "LangChain链_RunnablePassthrough",
             "m": 15
           },
           {
-            "id": 286,
-            "name": "RunnableLambda",
+            "id": 851,
+            "name": "LangChain链_RunnableLambda",
             "m": 11
           },
           {
-            "id": 287,
-            "name": "RunnableMap",
+            "id": 852,
+            "name": "LangChain链_RunnableMap",
             "m": 13
           },
           {
-            "id": 288,
-            "name": "RunnableBranch",
+            "id": 853,
+            "name": "LangChain链_RunnableBranch",
             "m": 15
           },
           {
-            "id": 289,
+            "id": 854,
             "name": "LCEL重写_LLMChain",
             "m": 13
           },
           {
-            "id": 290,
+            "id": 855,
             "name": "LCEL重写_SimpleSequentialChain",
             "m": 16
           },
           {
-            "id": 291,
+            "id": 856,
             "name": "LCEL重写_SequentialChain",
             "m": 11
           },
           {
-            "id": 292,
+            "id": 857,
             "name": "LCEL实现_RouterChain",
             "m": 11
-          }
-        ]
-      },
-      {
-        "name": "LangGraph工作流",
-        "courses": [
+          },
           {
-            "id": 293,
+            "id": 858,
             "name": "LangGraph_应用场景",
             "m": 5
           },
           {
-            "id": 294,
-            "name": "核心概念与构建流程",
+            "id": 859,
+            "name": "LangGraph_核心概念与构建流程",
             "m": 13
           },
           {
-            "id": 295,
-            "name": "线性Graph",
+            "id": 860,
+            "name": "LangGraph_线性Graph",
             "m": 16
           },
           {
-            "id": 296,
-            "name": "状态规约器",
+            "id": 861,
+            "name": "LangGraph_状态规约器",
             "m": 16
           },
           {
-            "id": 297,
-            "name": "条件路由Graph",
+            "id": 862,
+            "name": "LangGraph_条件路由Graph",
             "m": 17
           },
           {
-            "id": 298,
-            "name": "循环结构Graph",
+            "id": 863,
+            "name": "LangGraph_循环结构Graph",
             "m": 20
           },
           {
-            "id": 299,
-            "name": "SubGraph1",
+            "id": 864,
+            "name": "LangGraph_SubGraph1",
             "m": 11
           },
           {
-            "id": 300,
-            "name": "SubGraph2",
+            "id": 865,
+            "name": "LangGraph_SubGraph2",
             "m": 14
           },
           {
-            "id": 301,
-            "name": "人工介入",
+            "id": 866,
+            "name": "LangGraph_人工介入",
             "m": 21
           },
           {
-            "id": 302,
-            "name": "Stream与可视化",
+            "id": 867,
+            "name": "LangGraph_Stream与可视化",
             "m": 15
           },
           {
-            "id": 303,
-            "name": "并行执行",
+            "id": 868,
+            "name": "LangGraph_并行执行",
             "m": 0
           },
           {
-            "id": 304,
-            "name": "工具系统介绍",
-            "m": 5
+            "id": 869,
+            "name": "LangGraph_工具系统介绍",
+            "m": 4
           },
           {
-            "id": 305,
-            "name": "Tools是什么",
+            "id": 870,
+            "name": "LangGraph_Tools是什么",
             "m": 8
           },
           {
-            "id": 306,
-            "name": "@tools+Pydantic",
+            "id": 871,
+            "name": "LangGraph_@tools+Pydantic",
             "m": 17
           },
           {
-            "id": 307,
-            "name": "ToolNode自动执行",
+            "id": 872,
+            "name": "LangGraph_ToolNode自动执行工具",
             "m": 18
           },
           {
-            "id": 308,
-            "name": "tools_condition",
+            "id": 873,
+            "name": "LangGraph_tools_condition",
             "m": 5
           },
           {
-            "id": 309,
-            "name": "CreateAgent函数",
+            "id": 874,
+            "name": "LangGraph_CreateAgent函数",
             "m": 15
           },
           {
-            "id": 310,
-            "name": "工具错误处理介绍",
+            "id": 875,
+            "name": "LangGraph_工具错误处理介绍",
             "m": 11
           },
           {
-            "id": 311,
-            "name": "工具已知错误处理",
+            "id": 876,
+            "name": "LangGraph_工具已知错误处理",
             "m": 5
           },
           {
-            "id": 312,
-            "name": "工具未知错误处理",
+            "id": 877,
+            "name": "LangGraph_工具未知错误处理",
             "m": 7
           },
           {
-            "id": 313,
-            "name": "工具临时错误处理",
+            "id": 878,
+            "name": "LangGraph_工具临时错误处理",
             "m": 8
           },
           {
-            "id": 314,
-            "name": "工具错误_三种策略组合",
+            "id": 879,
+            "name": "LangGraph_工具错误_三种策略组合",
             "m": 5
           },
           {
-            "id": 315,
-            "name": "多工具组合使用",
+            "id": 880,
+            "name": "LangGraph_多工具组合使用",
             "m": 10
           },
           {
-            "id": 316,
-            "name": "记忆系统介绍",
+            "id": 881,
+            "name": "LangGraph_记忆系统介绍",
             "m": 5
           },
           {
-            "id": 317,
-            "name": "记忆系统分类",
+            "id": 882,
+            "name": "LangGraph_记忆系统分类",
             "m": 9
           },
           {
-            "id": 318,
-            "name": "短期记忆Checkpointer",
+            "id": 883,
+            "name": "LangGraph_短期记忆Checkpointer",
             "m": 17
           },
           {
-            "id": 319,
-            "name": "Agent+短期记忆",
+            "id": 884,
+            "name": "LangGraph_Agent+短期记忆",
             "m": 9
           },
           {
-            "id": 320,
-            "name": "长期记忆Checkpointer",
+            "id": 885,
+            "name": "LangGraph_长期记忆Checkpointer",
             "m": 13
           },
           {
-            "id": 321,
-            "name": "Agent+长期记忆1",
+            "id": 886,
+            "name": "LangGraph_Agent+长期记忆1",
             "m": 10
           },
           {
-            "id": 322,
-            "name": "Agent+长期记忆2",
+            "id": 887,
+            "name": "LangGraph_Agent+长期记忆2",
             "m": 0
           },
           {
-            "id": 323,
-            "name": "记忆持久化_环境搭建",
+            "id": 888,
+            "name": "LangGraph_记忆持久化_环境搭建",
             "m": 10
           },
           {
-            "id": 324,
-            "name": "记忆持久化_实现",
+            "id": 889,
+            "name": "LangGraph_记忆持久化_实现",
             "m": 12
-          }
-        ]
-      },
-      {
-        "name": "MCP与工具系统",
-        "courses": [
+          },
           {
-            "id": 325,
+            "id": 890,
             "name": "MCP介绍",
             "m": 10
           },
           {
-            "id": 326,
+            "id": 891,
             "name": "MCP与tool区别",
             "m": 8
           },
           {
-            "id": 327,
+            "id": 892,
             "name": "MCP服务_stdio模式",
             "m": 12
           },
           {
-            "id": 328,
+            "id": 893,
             "name": "MCP服务_streamable",
             "m": 5
           },
           {
-            "id": 329,
+            "id": 894,
             "name": "MCP客户端开发",
             "m": 9
           },
           {
-            "id": 330,
+            "id": 895,
             "name": "LangGraph调用MCP",
             "m": 14
           },
           {
-            "id": 331,
+            "id": 896,
             "name": "StateGraph调用MCP",
             "m": 15
           },
           {
-            "id": 332,
+            "id": 897,
             "name": "LangGraph调用云MCP",
             "m": 14
           },
           {
-            "id": 333,
+            "id": 898,
             "name": "MCP与工具的决策",
             "m": 7
           },
           {
-            "id": 334,
-            "name": "人机协作介绍",
+            "id": 899,
+            "name": "LangGraph人机协作介绍",
             "m": 8
           },
           {
-            "id": 335,
-            "name": "人机协作_审批模式",
+            "id": 900,
+            "name": "LangGraph人机协作_审批模式",
             "m": 16
           },
           {
-            "id": 336,
-            "name": "人机协作_反馈模式",
+            "id": 901,
+            "name": "LangGraph人机协作_反馈模式",
             "m": 16
           },
           {
-            "id": 337,
-            "name": "人机协作_智能审批",
+            "id": 902,
+            "name": "LangGraph人机协作_智能审批",
             "m": 11
           },
           {
-            "id": 338,
-            "name": "人机协作架构总结",
+            "id": 903,
+            "name": "LangGraph人机协作架构总结",
             "m": 10
           },
           {
-            "id": 339,
+            "id": 904,
             "name": "Agent综合实战1",
             "m": 11
           },
           {
-            "id": 340,
+            "id": 905,
             "name": "Agent综合实战2",
             "m": 8
           },
           {
-            "id": 341,
+            "id": 906,
             "name": "多Agent协作介绍",
             "m": 7
           },
           {
-            "id": 342,
+            "id": 907,
             "name": "多Agent协作_Supervisor实现",
             "m": 17
           },
           {
-            "id": 343,
+            "id": 908,
             "name": "RAG+Agent搭配使用",
             "m": 15
           },
           {
-            "id": 344,
+            "id": 909,
             "name": "LangSmith介绍",
             "m": 6
           },
           {
-            "id": 345,
+            "id": 910,
             "name": "LangSmith初步体验",
             "m": 14
           },
           {
-            "id": 346,
+            "id": 911,
             "name": "LangSmith检测LCEL",
             "m": 10
           },
           {
-            "id": 347,
+            "id": 912,
             "name": "LangSmith检测LangGraph",
             "m": 13
           },
           {
-            "id": 348,
+            "id": 913,
             "name": "A2A协议介绍",
             "m": 14
           },
           {
-            "id": 349,
-            "name": "A2A极简Server开发1",
+            "id": 914,
+            "name": "A2A的极简Server开发1",
             "m": 17
           },
           {
-            "id": 350,
-            "name": "A2A极简Server开发2",
+            "id": 915,
+            "name": "A2A的极简Server开发2",
             "m": 14
           },
           {
-            "id": 351,
-            "name": "A2A极简Client开发",
+            "id": 916,
+            "name": "A2A的极简Client开发",
             "m": 13
           },
           {
-            "id": 352,
-            "name": "A2A完整Server开发",
+            "id": 917,
+            "name": "A2A的完整Server开发",
             "m": 14
           },
           {
-            "id": 353,
-            "name": "A2A完整Client开发",
+            "id": 918,
+            "name": "A2A的完整Client开发",
             "m": 13
           },
           {
-            "id": 354,
+            "id": 919,
             "name": "A2A集成LangGraph_Client开发",
             "m": 0
           },
           {
-            "id": 355,
+            "id": 920,
             "name": "A2A集成LangGraph_Server开发",
             "m": 17
+          },
+          {
+            "id": 921,
+            "name": "【实操】本章资料下载地址",
+            "m": 0
           }
         ]
       },
       {
-        "name": "Agent Skills",
+        "name": "智能体MCP",
         "courses": [
           {
-            "id": 356,
-            "name": "Agent Skills是什么",
+            "id": 922,
+            "name": "MCP工具开发_什么是MCP",
+            "m": 11
+          },
+          {
+            "id": 923,
+            "name": "MCP工具开发_MCP三种通信机制对比分析",
+            "m": 11
+          },
+          {
+            "id": 924,
+            "name": "MCP工具开发_FastMCP实践开发应用",
+            "m": 11
+          },
+          {
+            "id": 925,
+            "name": "MCP工具开发_开发第一个MCP服务",
+            "m": 14
+          },
+          {
+            "id": 926,
+            "name": "MCP工具开发_开发MCP客户端",
+            "m": 11
+          },
+          {
+            "id": 927,
+            "name": "MCP工具开发_实现数据库查询",
+            "m": 12
+          },
+          {
+            "id": 928,
+            "name": "MCP工具开发_实现邮件发送MCP",
+            "m": 14
+          },
+          {
+            "id": 929,
+            "name": "MCP工具开发_面向Agent的数据图表工具开发",
+            "m": 19
+          },
+          {
+            "id": 930,
+            "name": "【实操】本章资料下载地址",
+            "m": 0
+          }
+        ]
+      },
+      {
+        "name": "手摸手彻底掌握 Agent Skills",
+        "courses": [
+          {
+            "id": 931,
+            "name": "Agent Skills 到底是个啥",
             "m": 7
           },
           {
-            "id": 357,
+            "id": 932,
             "name": "Agent Skills 环境搭建",
             "m": 10
           },
           {
-            "id": 358,
-            "name": "编写简单的Skill",
+            "id": 933,
+            "name": "Agent Skills 编写简单的Skill",
             "m": 11
           },
           {
-            "id": 359,
-            "name": "生成创意图片的Skill",
+            "id": 934,
+            "name": "Agent Skills 生成创意图片的Skill",
             "m": 10
           },
           {
-            "id": 360,
-            "name": "创建Skill的Skill",
+            "id": 935,
+            "name": "Agent Skills 创建Skill的Skill",
             "m": 10
           },
           {
-            "id": 361,
-            "name": "推荐好用必用的Skill",
+            "id": 936,
+            "name": "Agent Skills 推荐好用必用的Skill",
+            "m": 0
+          },
+          {
+            "id": 937,
+            "name": "【实操】本章资料下载地址",
+            "m": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "LegalMind法律咨询系统【企业级项目】",
+    "color": "#6C8EBF",
+    "bg": "#6C8EBF1a",
+    "desc": "企业级法律咨询 AI Agent 项目实战，涵盖 FastAPI 后端、RAG 混合检索、多 Agent 工作流与前端集成。",
+    "groups": [
+      {
+        "name": "LegalMind法律咨询系统",
+        "courses": [
+          {
+            "id": 938,
+            "name": "法律咨询Agent_项目介绍",
+            "m": 7
+          },
+          {
+            "id": 939,
+            "name": "法律咨询Agent_系统架构介绍",
+            "m": 10
+          },
+          {
+            "id": 940,
+            "name": "法律咨询Agent_表设计与项目结构",
+            "m": 8
+          },
+          {
+            "id": 941,
+            "name": "法律咨询Agent_基础设施搭建",
+            "m": 17
+          },
+          {
+            "id": 942,
+            "name": "法律咨询Agent_FastAPI 应用骨架搭建",
+            "m": 19
+          },
+          {
+            "id": 943,
+            "name": "法律咨询Agent_User与Case模型创建",
+            "m": 12
+          },
+          {
+            "id": 944,
+            "name": "法律咨询Agent_模型同步Database",
+            "m": 11
+          },
+          {
+            "id": 945,
+            "name": "法律咨询Agent_数据初始化脚本",
+            "m": 10
+          },
+          {
+            "id": 946,
+            "name": "法律咨询Agent_用户工具类实现",
+            "m": 13
+          },
+          {
+            "id": 947,
+            "name": "法律咨询Agent_依赖注入功能",
+            "m": 10
+          },
+          {
+            "id": 948,
+            "name": "法律咨询Agent_用户注册",
+            "m": 11
+          },
+          {
+            "id": 949,
+            "name": "法律咨询Agent_用户登录",
+            "m": 9
+          },
+          {
+            "id": 950,
+            "name": "法律咨询Agent_LLM客户端",
+            "m": 16
+          },
+          {
+            "id": 951,
+            "name": "法律咨询Agent_提示词逻辑",
+            "m": 13
+          },
+          {
+            "id": 952,
+            "name": "法律咨询Agent_下载嵌入模型",
+            "m": 6
+          },
+          {
+            "id": 953,
+            "name": "法律咨询Agent_加载嵌入模型",
+            "m": 8
+          },
+          {
+            "id": 954,
+            "name": "法律咨询Agent_初始化向量数据库",
+            "m": 10
+          },
+          {
+            "id": 955,
+            "name": "法律咨询Agent_重排序器",
+            "m": 12
+          },
+          {
+            "id": 956,
+            "name": "法律咨询Agent_BM25检索器",
+            "m": 9
+          },
+          {
+            "id": 957,
+            "name": "法律咨询Agent_混合检索器",
+            "m": 11
+          },
+          {
+            "id": 958,
+            "name": "法律咨询Agent_案例检索Agent",
+            "m": 8
+          },
+          {
+            "id": 959,
+            "name": "法律咨询Agent_案例检索服务",
+            "m": 14
+          },
+          {
+            "id": 960,
+            "name": "法律咨询Agent_意图识别Agent",
+            "m": 8
+          },
+          {
+            "id": 961,
+            "name": "法律咨询Agent_法律咨询Agent",
+            "m": 14
+          },
+          {
+            "id": 962,
+            "name": "法律咨询Agent_文书生成Agent1",
+            "m": 10
+          },
+          {
+            "id": 963,
+            "name": "法律咨询Agent_文书生成Agent2",
+            "m": 10
+          },
+          {
+            "id": 964,
+            "name": "法律咨询Agent_WorkFlow节点开发",
+            "m": 15
+          },
+          {
+            "id": 965,
+            "name": "法律咨询Agent_WorkFlow构建StataGraph",
+            "m": 13
+          },
+          {
+            "id": 966,
+            "name": "法律咨询Agent_WorkFlow调用与测试",
+            "m": 10
+          },
+          {
+            "id": 967,
+            "name": "法律咨询Agent_聊天模型与文档模型",
+            "m": 10
+          },
+          {
+            "id": 968,
+            "name": "法律咨询Agent_持久化记忆模块",
+            "m": 11
+          },
+          {
+            "id": 969,
+            "name": "法律咨询Agent_WorkFlow流式输出",
+            "m": 10
+          },
+          {
+            "id": 970,
+            "name": "法律咨询Agent_会话接口_非流式",
+            "m": 13
+          },
+          {
+            "id": 971,
+            "name": "法律咨询Agent_会话接口_流式",
+            "m": 13
+          },
+          {
+            "id": 972,
+            "name": "法律咨询Agent_优化qa节点",
+            "m": 9
+          },
+          {
+            "id": 973,
+            "name": "法律咨询Agent_优化WorkFlow",
+            "m": 8
+          },
+          {
+            "id": 974,
+            "name": "法律咨询Agent_调试消息接口",
+            "m": 11
+          },
+          {
+            "id": 975,
+            "name": "法律咨询Agent_历史消息接口",
+            "m": 7
+          },
+          {
+            "id": 976,
+            "name": "法律咨询Agent_单个消息接口",
+            "m": 5
+          },
+          {
+            "id": 977,
+            "name": "法律咨询Agent_删除消息接口与测试",
+            "m": 6
+          },
+          {
+            "id": 978,
+            "name": "法律咨询Agent_文书生成接口_非流式",
+            "m": 8
+          },
+          {
+            "id": 979,
+            "name": "法律咨询Agent_文书生成接口_流式",
+            "m": 10
+          },
+          {
+            "id": 980,
+            "name": "法律咨询Agent_文书生成接口_挂载与测试",
+            "m": 6
+          },
+          {
+            "id": 981,
+            "name": "法律咨询Agent_案例检索接口",
+            "m": 9
+          },
+          {
+            "id": 982,
+            "name": "法律咨询Agent_案例检索接口_测试",
+            "m": 2
+          },
+          {
+            "id": 983,
+            "name": "法律咨询Agent_前端项目搭建",
+            "m": 8
+          },
+          {
+            "id": 984,
+            "name": "法律咨询Agent_代码生成工具设置",
+            "m": 6
+          },
+          {
+            "id": 985,
+            "name": "法律咨询Agent_前端项目代码生成",
+            "m": 10
+          },
+          {
+            "id": 986,
+            "name": "法律咨询Agent_验证前端项目",
+            "m": 12
+          },
+          {
+            "id": 987,
+            "name": "法律咨询Agent_修复前端项目BUG",
+            "m": 10
+          },
+          {
+            "id": 988,
+            "name": "【实操】本章资料下载地址",
             "m": 0
           }
         ]
@@ -4818,7 +5110,7 @@ function renderHome(){
       '<div class="pc">'+dn+'/'+tot+' · '+pc+'%</div></div>';
   });
   mods+='</div></div>';
-  return tHTML+moti+statC+heatmapHTML()+mods;
+  return tHTML+moti+statC+mods;
 }
 function statCard(cls,label,val,icon){return '<div class="stat '+cls+'"><div class="v">'+esc(val)+'</div><div class="l">'+esc(label)+'</div>'+
   '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">'+icon+'</svg></div>';}
@@ -4828,121 +5120,6 @@ function refreshMoti(){const el=document.getElementById('motiText');if(!el)retur
 function goLearn(mi){curNav='learn';curMod=mi;$('#ptitle').textContent='项目学习';buildNav();render();}
 
 /* ---------- 全年活跃热力图 (GitHub 风格) ---------- */
-function heatmapHTML(){
-  /* 聚合：日期 → 打卡数 */
-  const dateCount={};
-  const vals=Object.values(ck.at||{});for(const d of vals){if(d)dateCount[d]=(dateCount[d]||0)+1;}
-  const now=new Date();
-  const year=now.getFullYear();
-  /* 统计 */
-  let activeDays=0,totalDays=0,maxCount=1;
-  for(let m=0;m<12;m++){
-    const daysInMonth=new Date(year,m+1,0).getDate();
-    for(let d=1;d<=daysInMonth;d++){totalDays++;
-      const ds=year+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-      if(dateCount[ds]){activeDays++;maxCount=Math.max(maxCount,dateCount[ds]);}}
-  }
-  const rate=totalDays?Math.round(activeDays/totalDays*100):0;
-  const curStreak=streak();
-
-  /* 级别阈值 */
-  function lvl(n){
-    if(!n)return 0;
-    if(maxCount<=1)return n>0?3:0;
-    if(n<=Math.ceil(maxCount*.25))return 1;
-    if(n<=Math.ceil(maxCount*.5))return 2;
-    if(n<=Math.ceil(maxCount*.75))return 3;
-    return 4;
-  }
-
-  /* 构建 12 月网格（每周一行，共 ~53 行） */
-  function buildGrid(){
-    const rows=[]; // each: {weeks: [{cells:[{date,count,level}]}], monthLabel}
-    // 预计算所有周
-    const jan1=new Date(year,0,1);
-    const jan1Dow=(jan1.getDay()+6)%7; // 周一=0
-    let curDate=new Date(year,0,1-jan1Dow); // 从该年第一个周一(或更早)开始
-    const dec31=new Date(year,11,31);
-    while(curDate<=dec31||((curDate.getDay()+6)%7!==0)){
-      const weekCells=[];
-      for(let i=0;i<7;i++){
-        const y=curDate.getFullYear(),mo=curDate.getMonth(),d=curDate.getDate();
-        const inYear=y===year;
-        const ds=y+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-        weekCells.push({date:ds,inYear,count:dateCount[ds]||0,lvl:inYear?lvl(dateCount[ds]||0):-1});
-        curDate=new Date(curDate.getTime()+864e5);
-      }
-      rows.push({cells:weekCells});
-    }
-    return rows;
-  }
-
-  const gridRows=buildGrid();
-
-  /* 按月分组渲染 */
-  let html='<div class="card heatmap-card">';
-  /* header */
-  html+='<div class="hm-header">'+
-    '<div class="hm-title"><span style="color:var(--grn)">📊</span> 全年活跃记录</div>'+
-    '<div class="hm-stats">'+
-    '<span><b class="hm-stat-val">'+activeDays+'</b> 天活跃</span>'+
-    '<span><b class="hm-stat-val">'+rate+'%</b> 活跃率</span>'+
-    '<span><b class="hm-stat-val">'+curStreak+'</b> 周连登</span>'+
-    '</div>'+
-    '</div>';
-
-  /* body: 月份标签 + 网格 */
-  html+='<div class="hm-body"><div class="hm-grid">';
-
-  /* 月份标签行 */
-  let ml='<div class="hm-month-row"><div class="hm-month-label"></div><div class="hm-weeks">';
-  for(let m=0;m<12;m++){
-    const first=new Date(year,m,1);
-    const last=new Date(year,m+1,0);
-    // 计算该月第一天的列索引
-    const diffMs=first.getTime()-new Date(year,0,1).getTime();
-    const startDay=Math.floor(diffMs/864e5);
-    const dow=(first.getDay()+6)%7;
-    const colStart=startDay+dow; // 该月1号在网格中的列位置
-    const daysInMonth=last.getDate();
-    const span=Math.ceil((colStart+daysInMonth)/7)*7-colStart; // 该月占的宽度(周数*7)
-    const w=span*14+Math.floor(span/7)*3; // cell+gap width
-    ml+='<span style="display:inline-block;width:'+w+'px;text-align:left;font-size:11px;color:var(--mut);font-weight:600;padding-left:2px">'+(m+1)+'月</span>';
-  }
-  ml+='</div></div>';
-  html+=ml;
-
-  /* 数据行（按周） */
-  for(let r=0;r<gridRows.length;r++){
-    const row=gridRows[r];
-    html+='<div class="hm-month-row"><div class="hm-month-label"></div><div class="hm-weeks">';
-    for(const cell of row.cells){
-      const l=cell.lvl;
-      const cls=l<0?' hm-l0':' hm-l'+l;
-      const tip=cell.inYear?
-        '<div class="hm-tip">'+cell.date+(cell.count?' · '+cell.count+' 门课打卡':'')+'</div>' :
-        '<div class="hm-tip">非本年度</div>';
-      html+='<div class="hm-cell'+cls+'"'+(cell.inYear?' title="'+cell.date+(cell.count?' ('+cell.count+'门)': '')+'"':'')+'>'+tip+'</div>';
-    }
-    html+='</div></div>';
-  }
-
-  html+='</div></div>'; /* grid + body */
-
-  /* footer: 图例 + 更新时间 */
-  html+='<div class="hm-footer"><div class="hm-legend">'+
-    '<span>未活跃</span>'+
-    '<span class="leg-cell hm-l0" style="border-radius:2px;display:inline-block;width:11px;height:11px"></span> '+
-    '<span class="leg-cell hm-l1" style="border-radius:2px;display:inline-block;width:11px;height:11px"></span> '+
-    '<span class="leg-cell hm-l2" style="border-radius:2px;display:inline-block;width:11px;height:11px"></span> '+
-    '<span class="leg-cell hm-l3" style="border-radius:2px;display:inline-block;width:11px;height:11px"></span> '+
-    '<span class="leg-cell hm-l4" style="border-radius:2px;display:inline-block;width:11px;height:11px"></span> '+
-    '<span>活跃</span>'+
-    '</div></div>';
-
-  html+='</div>'; /* card */
-  return html;
-}
 
 /* ---------- 计划与统计 ---------- */
 function renderPlan(){
