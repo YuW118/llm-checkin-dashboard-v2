@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="cache-buster" content="1786848600">
+<meta name="cache-buster" content="1787155600">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0a14" />
@@ -179,6 +179,44 @@ a{color:var(--cyan)}
   background:linear-gradient(135deg,var(--cyan),var(--grn));color:#06121a;cursor:pointer;border:none;transition:.15s}
 .empty-state .es-action:hover{transform:scale(1.04);box-shadow:0 4px 18px rgba(34,211,238,.3)}
 .empty-state .es-action:active{transform:scale(.97)}
+/* ── 全年活跃热力图 (GitHub 风格，暗色适配) ── */
+.heatmap-card{margin-top:18px;border:1px solid rgba(52,211,153,.2);background:linear-gradient(135deg,rgba(52,211,153,.05),rgba(34,211,238,.03))}
+.hm-header{display:flex;align-items:center;gap:16px;padding:16px 20px 0;flex-wrap:wrap}
+.hm-title{font-size:15px;font-weight:700;color:var(--txt);display:flex;align-items:center;gap:8px}
+.hm-stats{display:flex;gap:14px;font-size:12px;color:var(--mut)}
+.hm-stat-val{font-weight:800;color:var(--grn);font-size:15px}
+.hm-close{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:none;
+  color:var(--mut);font-size:14px;display:grid;place-items:center;cursor:pointer;margin-left:auto;flex-shrink:0}
+.hm-close:hover{border-color:var(--red);color:var(--red)}
+.hm-body{padding:16px 20px 18px;overflow-x:auto}
+.hm-grid{display:flex;flex-direction:column;gap:3px;min-width:680px}
+.hm-month-row{display:flex;gap:3px}
+.hm-month-label{width:36px;height:22px;font-size:11px;color:var(--mut);display:flex;align-items:center;flex-shrink:0;font-weight:600}
+.hm-weeks{display:flex;gap:3px;flex:1}
+.hm-cell{width:11px;height:11px;border-radius:2px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+  flex-shrink:0;transition:background .15s,border-color .15s,transform .12s;cursor:pointer;position:relative}
+.hm-cell:hover{transform:scale(1.4);z-index:2;border-color:rgba(255,255,255,.2)}
+/* 5 级绿色：0=空, 1=最浅, 2=浅, 3=中, 4=最深 */
+.hm-l0{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.06)}
+.hm-l1{background:rgba(52,211,153,.18);border-color:rgba(52,211,153,.25)}
+.hm-l2{background:rgba(52,211,153,.38);border-color:rgba(52,211,153,.40)}
+.hm-l3{background:rgba(52,211,153,.60);border-color:rgba(52,211,153,.55)}
+.hm-l4{background:rgba(52,211,153,.88);border-color:rgba(52,211,153,.7);box-shadow:0 0 6px rgba(52,211,153,.35)}
+.hm-footer{display:flex;align-items:center;justify-content:center;gap:10px;padding:0 20px 14px;font-size:11px;color:var(--mut)}
+.hm-legend{display:flex;align-items:center;gap:5px}
+.hm-legend span{font-size:11px;color:var(--mut)}
+.hm-leg-cell{width:11px;height:11px;border-radius:2px;display:inline-block}
+.hm-tip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  background:rgba(10,10,24,.95);border:1px solid var(--line);color:var(--txt);font-size:11.5px;
+  padding:5px 10px;border-radius:8px;white-space:nowrap;z-index:10;pointer-events:none;opacity:0;transition:opacity .15s}
+.hm-cell:hover .hm-tip{opacity:1}
+@media(max-width:768px){
+  .hm-body{padding:12px 14px 14px}
+  .hm-header{padding:12px 14px 0;gap:10px}
+  .hm-stat-val{font-size:13px}
+  .hm-cell{width:9px;height:9px}
+  .hm-leg-cell{width:9px;height:9px}
+}
 .addcustom input{flex:1;min-width:120px;padding:8px 10px;border-radius:9px;background:rgba(0,0,0,.35);border:1px solid var(--line);color:var(--txt);font-size:13px}
 .create-bar{display:none;gap:8px;align-items:center;padding:12px 16px;margin-bottom:14px;
   background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(217,70,239,.06));
@@ -4780,7 +4818,7 @@ function renderHome(){
       '<div class="pc">'+dn+'/'+tot+' · '+pc+'%</div></div>';
   });
   mods+='</div></div>';
-  return tHTML+moti+statC+mods;
+  return tHTML+moti+statC+heatmapHTML()+mods;
 }
 function statCard(cls,label,val,icon){return '<div class="stat '+cls+'"><div class="v">'+esc(val)+'</div><div class="l">'+esc(label)+'</div>'+
   '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">'+icon+'</svg></div>';}
@@ -4788,6 +4826,123 @@ function refreshMoti(){const el=document.getElementById('motiText');if(!el)retur
   callAI('你是鼓励学习大模型技术的伙伴，用一句中文（不超过30字）激励用户，温暖有力，不要标点结尾。','我在学习大模型，给我一句今日勉励。')
     .then(t=>{el.textContent=t||rnd(QUOTES_MOTI);});}
 function goLearn(mi){curNav='learn';curMod=mi;$('#ptitle').textContent='项目学习';buildNav();render();}
+
+/* ---------- 全年活跃热力图 (GitHub 风格) ---------- */
+function heatmapHTML(){
+  /* 聚合：日期 → 打卡数 */
+  const dateCount={};
+  const vals=Object.values(ck.at||{});for(const d of vals){if(d)dateCount[d]=(dateCount[d]||0)+1;}
+  const now=new Date();
+  const year=now.getFullYear();
+  /* 统计 */
+  let activeDays=0,totalDays=0,maxCount=1;
+  for(let m=0;m<12;m++){
+    const daysInMonth=new Date(year,m+1,0).getDate();
+    for(let d=1;d<=daysInMonth;d++){totalDays++;
+      const ds=year+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+      if(dateCount[ds]){activeDays++;maxCount=Math.max(maxCount,dateCount[ds]);}}
+  }
+  const rate=totalDays?Math.round(activeDays/totalDays*100):0;
+  const curStreak=streak();
+
+  /* 级别阈值 */
+  function lvl(n){
+    if(!n)return 0;
+    if(maxCount<=1)return n>0?3:0;
+    if(n<=Math.ceil(maxCount*.25))return 1;
+    if(n<=Math.ceil(maxCount*.5))return 2;
+    if(n<=Math.ceil(maxCount*.75))return 3;
+    return 4;
+  }
+
+  /* 构建 12 月网格（每周一行，共 ~53 行） */
+  function buildGrid(){
+    const rows=[]; // each: {weeks: [{cells:[{date,count,level}]}], monthLabel}
+    // 预计算所有周
+    const jan1=new Date(year,0,1);
+    const jan1Dow=(jan1.getDay()+6)%7; // 周一=0
+    let curDate=new Date(year,0,1-jan1Dow); // 从该年第一个周一(或更早)开始
+    const dec31=new Date(year,11,31);
+    while(curDate<=dec31||((curDate.getDay()+6)%7!==0){
+      const weekCells=[];
+      for(let i=0;i<7;i++){
+        const y=curDate.getFullYear(),mo=curDate.getMonth(),d=curDate.getDate();
+        const inYear=y===year;
+        const ds=y+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+        weekCells.push({date:ds,inYear,count:dateCount[ds]||0,lvl:inYear?lvl(dateCount[ds]||0):-1});
+        curDate=new Date(curDate.getTime()+864e5);
+      }
+      rows.push({cells:weekCells});
+    }
+    return rows;
+  }
+
+  const gridRows=buildGrid();
+
+  /* 按月分组渲染 */
+  let html='<div class="card heatmap-card">';
+  /* header */
+  html+='<div class="hm-header">'+
+    '<div class="hm-title"><span style="color:var(--grn)">📊</span> 全年活跃记录</div>'+
+    '<div class="hm-stats">'+
+    '<span><b class="hm-stat-val">'+activeDays+'</b> 天活跃</span>'+
+    '<span><b class="hm-stat-val">'+rate+'%</b> 活跃率</span>'+
+    '<span><b class="hm-stat-val">'+curStreak+'</b> 周连登</span>'+
+    '</div>'+
+    '</div>';
+
+  /* body: 月份标签 + 网格 */
+  html+='<div class="hm-body"><div class="hm-grid">';
+
+  /* 月份标签行 */
+  let ml='<div class="hm-month-row"><div class="hm-month-label"></div><div class="hm-weeks">';
+  for(let m=0;m<12;m++){
+    const first=new Date(year,m,1);
+    const last=new Date(year,m+1,0);
+    // 计算该月第一天的列索引
+    const diffMs=first.getTime()-new Date(year,0,1).getTime();
+    const startDay=Math.floor(diffMs/864e5);
+    const dow=(first.getDay()+6)%7;
+    const colStart=startDay+dow; // 该月1号在网格中的列位置
+    const daysInMonth=last.getDate();
+    const span=Math.ceil((colStart+daysInMonth)/7)*7-colStart; // 该月占的宽度(周数*7)
+    const w=span*14+Math.floor(span/7)*3; // cell+gap width
+    ml+='<span style="display:inline-block;width:'+w+'px;text-align:left;font-size:11px;color:var(--mut);font-weight:600;padding-left:2px">'+(m+1)+'月</span>';
+  }
+  ml+='</div></div>';
+  html+=ml;
+
+  /* 数据行（按周） */
+  for(let r=0;r<gridRows.length;r++){
+    const row=gridRows[r];
+    html+='<div class="hm-month-row"><div class="hm-month-label"></div><div class="hm-weeks">';
+    for(const cell of row.cells){
+      const l=cell.lvl;
+      const cls=l<0?' hm-l0':' hm-l'+l;
+      const tip=cell.inYear?
+        '<div class="hm-tip">'+cell.date+(cell.count?' · '+cell.count+' 门课打卡':'')+'</div>' :
+        '<div class="hm-tip">非本年度</div>';
+      html+='<div class="hm-cell'+cls+'"'+(cell.inYear?' title="'+cell.date+(cell.count?' ('+cell.count+'门)': '')+'"':'')+'>'+tip+'</div>';
+    }
+    html+='</div></div>';
+  }
+
+  html+='</div></div>'; /* grid + body */
+
+  /* footer: 图例 + 更新时间 */
+  html+='<div class="hm-footer"><div class="hm-legend">'+
+    '<span>未活跃</span>'+
+    '<span class="leg-cell hm-l0" style="border-radius:2px;display:inline-block;width:11px;height:11px"></span> '+
+    '<span class="leg-cell hm-l1" style="border-radius:2px;display:inline-block;width:11px;height:11px"></span> '+
+    '<span class="leg-cell hm-l2" style="border-radius:2px;display:inline-block;width:11px;height:11px"></span> '+
+    '<span class="leg-cell hm-l3" style="border-radius:2px;display:inline-block;width:11px;height:11px"></span> '+
+    '<span class="leg-cell hm-l4" style="border-radius:2px;display:inline-block;width:11px;height:11px"></span> '+
+    '<span>活跃</span>'+
+    '</div></div>';
+
+  html+='</div>'; /* card */
+  return html;
+}
 
 /* ---------- 计划与统计 ---------- */
 function renderPlan(){
