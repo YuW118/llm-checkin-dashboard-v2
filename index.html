@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="cache-buster" content="1787155600">
+<meta name="cache-buster" content="1787155800">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0a14" />
@@ -4863,7 +4863,7 @@ function heatmapHTML(){
     const jan1Dow=(jan1.getDay()+6)%7; // 周一=0
     let curDate=new Date(year,0,1-jan1Dow); // 从该年第一个周一(或更早)开始
     const dec31=new Date(year,11,31);
-    while(curDate<=dec31||((curDate.getDay()+6)%7!==0){
+    while(curDate<=dec31||((curDate.getDay()+6)%7!==0)){
       const weekCells=[];
       for(let i=0;i<7;i++){
         const y=curDate.getFullYear(),mo=curDate.getMonth(),d=curDate.getDate();
